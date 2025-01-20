@@ -36,6 +36,9 @@ const WorkLogs = sequelize.define('WorkLogs', {
         type: DataTypes.TIME,
         allowNull: true
     }
+}, {
+    tableName: 'tbl_workLogs',  // 실제 테이블 이름을 지정
+    timestamps: false            // Sequelize가 자동으로 생성하는 createdAt, updatedAt을 사용하지 않으면 false로 설정
 });
 
 export default WorkLogs;
