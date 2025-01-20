@@ -1,6 +1,9 @@
 import Employer from './Employer.js';
 import PartTimer from './PartTimer.js';
 import WorkLogs from './WorkLogs.js';
+import Review from "./Review.js";
+import PartTimerDocumentImage from "./PartTimerDocumentImage.js";
+import WorkPlace from "./WorkPlace.js";
 import Complaints from "./Complaints.js";
 import ComplaintsImage from "./ComplaintsImage.js";
 import PartTimerImage from "./PartTimerImage.js";
@@ -16,16 +19,30 @@ import JobPostingImage from './JobPostingImage.js';
 
 //Employer
 Employer.hasMany(WorkLogs, { foreignKey: 'eno' });
+Employer.hasMany(Review, { foreignKey: 'eno' });
+Employer.hasMany(WorkPlace, { foreignKey: 'eno' });
 Employer.hasMany(Complaints, { foreignKey: 'eno' });
 
 //PartTImer
 PartTimer.hasMany(WorkLogs, { foreignKey: 'pno' });
+PartTimer.hasMany(Review, { foreignKey: 'pno' });
+PartTimer.hasMany(PartTimerDocumentImage, { foreignKey: 'pno' });
 PartTimer.hasMany(Complaints, { foreignKey: 'pno' });
 PartTimer.hasMany(PartTimerImage, { foreignKey: 'pno' });
 
 //WorkLogs
 WorkLogs.belongsTo(Employer, { foreignKey: 'eno' });
 WorkLogs.belongsTo(PartTimer, { foreignKey: 'pno' });
+
+//Review
+Review.belongsTo(Employer, { foreignKey: 'eno' });
+Review.belongsTo(PartTimer, { foreignKey: 'pno' });
+
+//PartTimerDocumentImage
+PartTimerDocumentImage.belongsTo(PartTimer, { foreignKey: 'pno' });
+
+//WorkPlace
+WorkPlace.belongsTo(Employer, { foreignKey: 'eno' });
 
 // JobPostings
 JobPostings.belongsTo(Employer, { foreignKey: 'eno' });
@@ -63,6 +80,9 @@ const models = {
     Employer,
     PartTimer,
     WorkLogs,
+    Review,
+    PartTimerDocumentImage,
+    WorkPlace,
     JobPostings,
     JobMatchings,
     JobPostingApplication,
