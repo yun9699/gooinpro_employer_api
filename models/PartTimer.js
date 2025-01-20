@@ -1,47 +1,56 @@
 import {sequelize} from "../config/db.js";
 import {DataTypes} from "sequelize";
 
-const Employer = sequelize.define('Employer', {
+const PartTImer = sequelize.define('PartTImer', {
 
-    eno: {  //pk
+    pno: {  //Primary Key
         type: DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
-    eemail: {   //Employer Email
+    pemail: {   //email
         type: DataTypes.STRING,
         allowNull: false
     },
-    epw: {  //Employer Password
+    ppw: {  //password
         type: DataTypes.STRING,
         allowNull: false
     },
-    ename: {    //Employer Name
+    pname: {    //Name
         type: DataTypes.STRING,
         allowNull: false
     },
-    ebirth: {   //생일
+    pbirth: {   //생일
         type: DataTypes.DATE,
-        allowNull: true
+        allowNull: false
     },
-    egender: {  //성별(true: 남자, false: 여자)
+    pgender: {  //성별(true: male, false: female)
         type: DataTypes.BOOLEAN,
-        allowNull: true
+        allowNull: false,
+        defaultValue: true
     },
-    edelete: {  //soft delete flag
+    pdelete: {  //softDelete flag
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },
-    eregdate: { //등록 시간
+    pregdate: { //등록 시간
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
+    },
+    proadAddress: { //도로명 주소
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    pdetailAddress: {   //상세 주소
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
-    tableName: 'tbl_employer',  // 실제 테이블 이름을 지정
+    tableName: 'tbl_partTimer',  // 실제 테이블 이름을 지정
     timestamps: false            // Sequelize가 자동으로 생성하는 createdAt, updatedAt을 사용하지 않으면 false로 설정
 })
 
-export default Employer;
+export default PartTImer;
