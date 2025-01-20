@@ -1,6 +1,8 @@
+
 import {sequelize} from "../config/db.js";
 import {DataTypes} from "sequelize";
 
+//고용인
 const Employer = sequelize.define('Employer', {
 
     eno: {  //pk
@@ -42,6 +44,6 @@ const Employer = sequelize.define('Employer', {
 }, {
     tableName: 'tbl_employer',  // 실제 테이블 이름을 지정
     timestamps: false            // Sequelize가 자동으로 생성하는 createdAt, updatedAt을 사용하지 않으면 false로 설정
-})
+});
 
 export default Employer;

@@ -1,5 +1,7 @@
 import express from 'express';
-import Employer from './models/Employer.js';
+import models from './models/index.js';
+
+const { Employer } = models;
 
 const app = express();
 const PORT = 3000;
