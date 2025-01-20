@@ -18,10 +18,6 @@ const ComplaintsImage = sequelize.define('ComplaintsImage', {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    cno: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-    }
 
 }, {
     tableName: 'tbl_complaintsImage',  // 실제 테이블 이름을 지정
