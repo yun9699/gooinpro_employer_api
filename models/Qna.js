@@ -3,52 +3,40 @@ import {DataTypes} from "sequelize";
 
 const Qna = sequelize.define('qna', {
 
-    qno: {
+    qno: { //pk
         type: DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
     },
-    ccheckedTime: {
+    ccheckedTime: { // 답변시간
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
-    ccontent: {
+    ccontent: { //문의 내용
         type: DataTypes.STRING,
         allowNull: false
     },
-    cdelete: {
+    cdelete: { // 삭제여부
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false
     },
-    cregdate: {
+    cregdate: { //등록날짜
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
     },
-    eno: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        foreignKey: true,
-        defaultValue: false,
-    },
-    pno: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        defaultValue: false,
-        foreignKey: true,
-    },
-    ctitle: {
+    ctitle: { //문의 제목
         type: DataTypes.STRING,
         allowNull: false,
     },
-    canswer: {
+    canswer: { //답변
         type: DataTypes.STRING,
         allowNull: false
     },
-    cstatus: {
+    cstatus: { //답변 상태
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
@@ -57,6 +45,6 @@ const Qna = sequelize.define('qna', {
     tableName: 'tbl_qna',
     timestamps: false,
 
-})
+});
 
 export default Qna;

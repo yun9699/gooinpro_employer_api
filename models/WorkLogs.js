@@ -36,6 +36,9 @@ const WorkLogs = sequelize.define('WorkLogs', {
         type: DataTypes.TIME,
         allowNull: true
     }
+}, {
+    tableName: 'tbl_workLogs',
+    timestamps: false,
 });
 
 export default WorkLogs;

@@ -3,45 +3,39 @@ import {DataTypes} from "sequelize";
 
 const Faq = sequelize.define('Faq', {
 
-    fno: {
+    fno: {  //pk
         type: DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
     },
-    fcategory: {
+    fcategory: { // FAQ 카테고리
         type: DataTypes.STRING,
         allowNull: false,
     },
-    fcontent: {
+    fcontent: { // FAQ 내용
         type: DataTypes.STRING,
         allowNull: false,
     },
-    fdelete: {
+    fdelete: { // 삭제여부
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },
-    fmoddate: {
+    fmoddate: { // 수정시간
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
     },
-    fregdate: {
+    fregdate: { // 등록시간
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
     },
-    ftitle: {
+    ftitle: { // 제목
         type: DataTypes.STRING,
         allowNull: false,
     },
-    admno: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        defaultValue: false,
-        foreignKey: true
-    }
 }, {
     tableName: 'tbl_faq',
     timestamps: false,
