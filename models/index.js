@@ -4,6 +4,9 @@ import WorkLogs from './WorkLogs.js';
 import Complaints from "./Complaints.js";
 import ComplaintsImage from "./ComplaintsImage.js";
 import PartTimerImage from "./PartTimerImage.js";
+import Qna from "./Qna.js";
+import Faq from "./Faq.js";
+import EChatroom from "./EChatroom.js";
 
 // 관계 정의
 
@@ -32,11 +35,18 @@ ComplaintsImage.belongsTo(Complaints, { foreignKey: 'cno' });
 PartTimerImage.belongsTo(PartTimer, { foreignKey: 'pno' });
 
 
+//QNA
+Qna.belongsTo(Employer, { foreignKey: 'eno' });
+Qna.belongsTo(PartTimer, { foreignKey: 'pno' });
+
 
 const models = {
     Employer,
     PartTimer,
     WorkLogs,
+    Qna,
+    Faq,
+    EChatroom,
     Complaints,
     ComplaintsImage,
     PartTimerImage,
