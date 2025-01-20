@@ -1,6 +1,7 @@
 import {sequelize} from "../config/db.js";
 import {DataTypes} from "sequelize";
 
+//리뷰
 const Review = sequelize.define('Review', {
 
     rno: {  //Primary Key
