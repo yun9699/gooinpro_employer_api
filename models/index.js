@@ -3,12 +3,14 @@ import PartTimer from './PartTimer.js';
 import WorkLogs from './WorkLogs.js';
 import Review from "./Review.js";
 import PartTimerDocumentImage from "./PartTimerDocumentImage.js";
+import WorkPlace from "./WorkPlace.js";
 
 // 관계 정의
 
 //Employer
 Employer.hasMany(WorkLogs, { foreignKey: 'eno' });
 Employer.hasMany(Review, { foreignKey: 'eno' });
+Employer.hasMany(WorkPlace, { foreignKey: 'eno' });
 
 //PartTImer
 PartTimer.hasMany(WorkLogs, { foreignKey: 'pno' });
@@ -23,8 +25,11 @@ WorkLogs.belongsTo(PartTimer, { foreignKey: 'pno' });
 Review.belongsTo(Employer, { foreignKey: 'eno' });
 Review.belongsTo(PartTimer, { foreignKey: 'pno' });
 
-//
+//PartTimerDocumentImage
 PartTimerDocumentImage.belongsTo(PartTimer, { foreignKey: 'pno' });
+
+//WorkPlace
+WorkPlace.belongsTo(Employer, { foreignKey: 'eno' });
 
 
 const models = {
@@ -33,6 +38,7 @@ const models = {
     WorkLogs,
     Review,
     PartTimerDocumentImage,
+    WorkPlace
 }
 
 export default models;

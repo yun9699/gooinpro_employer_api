@@ -1,22 +1,26 @@
 import {sequelize} from "../config/db.js";
 import {DataTypes} from "sequelize";
 
-//근로자 서류 사진
-const PartTimerDocumentImage = sequelize.define("PartTimerDocumentImage", {
+//근무지 주소
+const WorkPlace = sequelize.define('WorkPlace', {
 
-    pdino: {    //Primary Key
+    wpno: {  //Primary Key
         type: DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
-    pdifilename: {  //파일 이름
+    wroadAddress: { //도로명 주소
         type: DataTypes.STRING,
         allowNull: false
+    },
+    wdetailAddress: {   //상세 주소
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
-    tableName: 'tbl_partTimerDocumentImage',  // 실제 테이블 이름을 지정
+    tableName: 'tbl_workPlace',  // 실제 테이블 이름을 지정
     timestamps: false            // Sequelize가 자동으로 생성하는 createdAt, updatedAt을 사용하지 않으면 false로 설정
 });
 
-export default PartTimerDocumentImage;
+export default WorkPlace;
