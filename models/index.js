@@ -7,6 +7,10 @@ import PartTimerImage from "./PartTimerImage.js";
 import Qna from "./Qna.js";
 import Faq from "./Faq.js";
 import EChatroom from "./EChatroom.js";
+import JobPostings from './JobPostings.js';
+import JobMatchings from './JobMatchings.js';
+import JobPostingApplication from "./JobPostingApplication.js";
+import JobPostingImage from './JobPostingImage.js';
 
 // 관계 정의
 
@@ -23,6 +27,22 @@ PartTimer.hasMany(PartTimerImage, { foreignKey: 'pno' });
 WorkLogs.belongsTo(Employer, { foreignKey: 'eno' });
 WorkLogs.belongsTo(PartTimer, { foreignKey: 'pno' });
 
+// JobPostings
+JobPostings.belongsTo(Employer, { foreignKey: 'eno' });
+JobPostings.hasMany(JobMatchings, { foreignKey: 'jpno' });
+
+// JobMatchings
+JobMatchings.belongsTo(JobPostings, { foreignKey: 'jpno' });
+JobMatchings.belongsTo(PartTimer, { foreignKey: 'ptno' });
+
+// JobPostingApplication
+JobPostingApplication.belongsTo(JobPostings, { foreignKey: 'jpno' });
+JobPostingApplication.belongsTo(PartTimer, { foreignKey: 'ptno' });
+
+// JobPostingImage
+JobPostingImage.belongsTo(JobPostings, { foreignKey: 'jpno' });
+JobPostingImage.belongsTo(Employer, { foreignKey: 'eno' });
+
 //Complaints
 Complaints.hasMany(ComplaintsImage, { foreignKey: 'cno' });
 Complaints.belongsTo(Employer, { foreignKey: 'eno' });
@@ -34,7 +54,6 @@ ComplaintsImage.belongsTo(Complaints, { foreignKey: 'cno' });
 //partTimerImage
 PartTimerImage.belongsTo(PartTimer, { foreignKey: 'pno' });
 
-
 //QNA
 Qna.belongsTo(Employer, { foreignKey: 'eno' });
 Qna.belongsTo(PartTimer, { foreignKey: 'pno' });
@@ -44,6 +63,10 @@ const models = {
     Employer,
     PartTimer,
     WorkLogs,
+    JobPostings,
+    JobMatchings,
+    JobPostingApplication,
+    JobPostingImage,
     Qna,
     Faq,
     EChatroom,
