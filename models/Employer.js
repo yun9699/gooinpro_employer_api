@@ -3,38 +3,38 @@ import {DataTypes} from "sequelize";
 
 const Employer = sequelize.define('Employer', {
 
-    eno: {
+    eno: {  //pk
         type: DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
-    eemail: {
+    eemail: {   //Employer Email
         type: DataTypes.STRING,
         allowNull: false
     },
-    epw: {
+    epw: {  //Employer Password
         type: DataTypes.STRING,
         allowNull: false
     },
-    ename: {
+    ename: {    //Employer Name
         type: DataTypes.STRING,
         allowNull: false
     },
-    ebirth: {
+    ebirth: {   //생일
         type: DataTypes.DATE,
         allowNull: true
     },
-    egender: {
+    egender: {  //성별(true: 남자, false: 여자)
         type: DataTypes.BOOLEAN,
         allowNull: true
     },
-    edelete: {
+    edelete: {  //soft delete flag
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },
-    eregdate: {
+    eregdate: { //등록 시간
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
