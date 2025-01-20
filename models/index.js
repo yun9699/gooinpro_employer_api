@@ -14,8 +14,14 @@ import JobPostings from './JobPostings.js';
 import JobMatchings from './JobMatchings.js';
 import JobPostingApplication from "./JobPostingApplication.js";
 import JobPostingImage from './JobPostingImage.js';
+import Admin from "./Admin.js";
 
 // 관계 정의
+
+//Admin
+Admin.hasMany(Qna, { foreignKey: 'admno'});
+Admin.hasMany(EChatroom, { foreignKey: 'admno'});
+Admin.hasMany(Faq, { foreignKey: 'admno'});
 
 //Employer
 Employer.hasMany(WorkLogs, { foreignKey: 'eno' });
@@ -74,7 +80,14 @@ PartTimerImage.belongsTo(PartTimer, { foreignKey: 'pno' });
 //QNA
 Qna.belongsTo(Employer, { foreignKey: 'eno' });
 Qna.belongsTo(PartTimer, { foreignKey: 'pno' });
+Qna.belongsTo(Admin, { foreignKey: 'admno' });
 
+//FAQ
+Faq.belongsTo(Admin, { foreignKey: 'admno' });
+
+//eChatroom
+EChatroom.belongsTo(PartTimer, { foreignKey: 'pno' });
+EChatroom.belongsTo(Admin, { foreignKey: 'admno' });
 
 const models = {
     Employer,
@@ -93,6 +106,7 @@ const models = {
     Complaints,
     ComplaintsImage,
     PartTimerImage,
+    Admin
 }
 
 export default models;
