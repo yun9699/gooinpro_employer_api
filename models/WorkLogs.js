@@ -1,7 +1,6 @@
+
 import {sequelize} from "../config/db.js";
 import {DataTypes} from "sequelize";
-import Employer from "./Employer.js";
-import PartTimer from "./PartTimer.js";
 
 //근태
 const WorkLogs = sequelize.define('WorkLogs', {
@@ -38,8 +37,5 @@ const WorkLogs = sequelize.define('WorkLogs', {
         allowNull: true
     }
 });
-
-WorkLogs.belongsTo(Employer, {foreignKey: 'eno'});
-WorkLogs.belongsTo(PartTimer, {foreignKey: 'pno'});
 
 export default WorkLogs;
