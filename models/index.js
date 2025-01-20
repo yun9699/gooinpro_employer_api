@@ -47,7 +47,6 @@ const models = {
     Qna,
     Faq,
     EChatroom,
-    WorkLogs,
     Complaints,
     ComplaintsImage,
     PartTimerImage,
