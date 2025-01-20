@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 
-const JobMatchings = sequelize.define('JobMatchings', {
-    jmno: {
+const JobPostingImage = sequelize.define('JobPostingImage', {
+    jpino: {
         type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true,
@@ -12,27 +12,17 @@ const JobMatchings = sequelize.define('JobMatchings', {
         type: DataTypes.BIGINT,
         allowNull: false
     },
-    ptno: {
+    eno: {
         type: DataTypes.BIGINT,
         allowNull: false
     },
-    jmregdate: {
-        type: DataTypes.DATE,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-        allowNull: false
-    },
-    jmstatus: {
+    jpifilename: {
         type: DataTypes.STRING(100),
-        allowNull: true
-    },
-    jmdelete: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
         allowNull: false
     }
 }, {
-    tableName: 'tbl_jobMatchings',
+    tableName: 'tbl_jobPostingImage',
     timestamps: false
 });
 
-export default JobMatchings;
+export default JobPostingImage;

@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
-import Employer from "./Employer.js";
 
 const JobPostings = sequelize.define('JobPostings', {
     jpno: {
@@ -11,11 +10,7 @@ const JobPostings = sequelize.define('JobPostings', {
     },
     eno: {
         type: DataTypes.BIGINT,
-        allowNull: false,
-        references: {
-            model: 'tbl_employer',
-            key: 'eno'
-        }
+        allowNull: false
     },
     jpname: {
         type: DataTypes.STRING(255),
@@ -73,16 +68,5 @@ const JobPostings = sequelize.define('JobPostings', {
     tableName: 'tbl_jobPostings',
     timestamps: false
 });
-
-JobPostings.belongsTo(Employer, {
-    foreignKey: 'eno',
-    constraints: true,
-    onDelete: 'CASCADE',
-});
-
-Employer.hasMany(JobPostings, {
-    foreignKey: 'eno'
-});
-
 
 export default JobPostings;
