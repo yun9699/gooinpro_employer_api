@@ -1,6 +1,12 @@
 import Employer from './Employer.js';
 import PartTimer from './PartTimer.js';
 import WorkLogs from './WorkLogs.js';
+import Complaints from "./Complaints.js";
+import ComplaintsImage from "./ComplaintsImage.js";
+import PartTimerImage from "./PartTimerImage.js";
+import Qna from "./Qna.js";
+import Faq from "./Faq.js";
+import EChatroom from "./EChatroom.js";
 import JobPostings from './JobPostings.js';
 import JobMatchings from './JobMatchings.js';
 import JobPostingApplication from "./JobPostingApplication.js";
@@ -10,9 +16,12 @@ import JobPostingImage from './JobPostingImage.js';
 
 //Employer
 Employer.hasMany(WorkLogs, { foreignKey: 'eno' });
+Employer.hasMany(Complaints, { foreignKey: 'eno' });
 
 //PartTImer
 PartTimer.hasMany(WorkLogs, { foreignKey: 'pno' });
+PartTimer.hasMany(Complaints, { foreignKey: 'pno' });
+PartTimer.hasMany(PartTimerImage, { foreignKey: 'pno' });
 
 //WorkLogs
 WorkLogs.belongsTo(Employer, { foreignKey: 'eno' });
@@ -34,6 +43,21 @@ JobPostingApplication.belongsTo(PartTimer, { foreignKey: 'ptno' });
 JobPostingImage.belongsTo(JobPostings, { foreignKey: 'jpno' });
 JobPostingImage.belongsTo(Employer, { foreignKey: 'eno' });
 
+//Complaints
+Complaints.hasMany(ComplaintsImage, { foreignKey: 'cno' });
+Complaints.belongsTo(Employer, { foreignKey: 'eno' });
+Complaints.belongsTo(PartTimer, { foreignKey: 'pno' });
+
+//ComplaintsImage
+ComplaintsImage.belongsTo(Complaints, { foreignKey: 'cno' });
+
+//partTimerImage
+PartTimerImage.belongsTo(PartTimer, { foreignKey: 'pno' });
+
+//QNA
+Qna.belongsTo(Employer, { foreignKey: 'eno' });
+Qna.belongsTo(PartTimer, { foreignKey: 'pno' });
+
 
 const models = {
     Employer,
@@ -42,7 +66,13 @@ const models = {
     JobPostings,
     JobMatchings,
     JobPostingApplication,
-    JobPostingImage
+    JobPostingImage,
+    Qna,
+    Faq,
+    EChatroom,
+    Complaints,
+    ComplaintsImage,
+    PartTimerImage,
 }
 
 export default models;

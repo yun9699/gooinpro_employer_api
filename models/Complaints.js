@@ -48,22 +48,6 @@ const Complaints = sequelize.define('Complaints', {
         allowNull: false,
         defaultValue: false
     },
-    eno: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        references: {
-            model: Employer,   // Employer 모델을 참조합니다
-            key: 'eno'         // Employer 모델의 eno 필드를 참조
-        }
-    },
-    pno: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        references: {
-            model: PartTimer,   // Employer 모델을 참조합니다
-            key: 'pno'         // Employer 모델의 eno 필드를 참조
-        }
-    },
 }, {
     tableName: 'tbl_complaints',  // 실제 테이블 이름을 지정
     timestamps: false            // Sequelize가 자동으로 생성하는 createdAt, updatedAt을 사용하지 않으면 false로 설정
