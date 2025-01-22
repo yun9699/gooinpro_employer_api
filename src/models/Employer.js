@@ -40,6 +40,10 @@ const Employer = sequelize.define('Employer', {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
+    },
+    isNew: {
+        type: DataTypes.BOOLEAN,
+        defalutValue: true
     }
 }, {
     tableName: 'tbl_employer',  // 실제 테이블 이름을 지정

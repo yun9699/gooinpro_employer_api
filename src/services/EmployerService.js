@@ -28,7 +28,8 @@ const returnMember = async (eemail) => {
             user.ename,
             user.ebirth,
             user.egender,
-            user.edelete
+            user.edelete,
+            user.isNew,
         );
     }
 
@@ -40,6 +41,7 @@ const returnMember = async (eemail) => {
         ename: "",
         ebirth: null,
         egender: "",
+        isNew: true,
     });
 
     console.log("555555555555555");
@@ -51,7 +53,8 @@ const returnMember = async (eemail) => {
         newUser.ename,
         newUser.ebirth,
         newUser.egender,
-        newUser.edelete
+        newUser.edelete,
+        newUser.isNew,
     );
 };
 
