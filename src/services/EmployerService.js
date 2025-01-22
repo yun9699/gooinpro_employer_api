@@ -1,6 +1,7 @@
 import Employer from "../models/Employer.js";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
+import EmployerDTO from "../dto/employerdto/EmployerDTO.js";
 
 const authKakao = async (accessToken) => {
     console.log("-------------authKakaoService-------------");
@@ -20,15 +21,15 @@ const returnMember = async (eemail) => {
     console.log(user);
 
     if (user) {
-        return {
-            eno: user.eno,
-            eemail: user.eemail,
-            epw: user.epw,
-            ename: user.ename,
-            ebirth: user.ebirth,
-            egender: user.egender,
-            edelete: user.edelete,
-        };
+        return new EmployerDTO(
+            user.eno,
+            user.eemail,
+            user.epw,
+            user.ename,
+            user.ebirth,
+            user.egender,
+            user.edelete
+        );
     }
 
     // 사용자가 없으면 새로운 사용자 생성
@@ -43,15 +44,15 @@ const returnMember = async (eemail) => {
 
     console.log("555555555555555");
 
-    return {
-        eno: newUser.eno,
-        eemail: newUser.eemail,
-        epw: newUser.epw,
-        ename: newUser.ename,
-        ebirth: newUser.ebirth,
-        egender: newUser.egender,
-        edelete: newUser.edelete,
-    };
+    return new EmployerDTO(
+        newUser.eno,
+        newUser.eemail,
+        newUser.epw,
+        newUser.ename,
+        newUser.ebirth,
+        newUser.egender,
+        newUser.edelete
+    );
 };
 
 // 카카오 액세스 토큰을 통해 이메일을 추출
