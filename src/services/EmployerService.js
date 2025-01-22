@@ -86,7 +86,7 @@ const registerEmployerService = async (eno, EmployerRegisterDTO) => {
         await Employer.update(
             {
                 ename: EmployerRegisterDTO.ename,
-                eemail: EmployerRegisterDTO.eemail,
+                ebirth: EmployerRegisterDTO.ebirth,
                 egender: EmployerRegisterDTO.egender,
                 isNew: false
             },
