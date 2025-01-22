@@ -1,4 +1,4 @@
-import {authKakao, getEmailFromKakaoAccessToken} from "../services/EmployerService.js";
+import {authKakao, getEmailFromKakaoAccessToken, registerEmployerService} from "../services/EmployerService.js";
 
 
 const kakaoLogin = async (req, res) => {
@@ -20,4 +20,22 @@ const kakaoLogin = async (req, res) => {
 
 }
 
-export { kakaoLogin }
+const registerEmployer = async (req, res) => {
+
+    console.log("registerEmployer")
+
+    const { eno } = req.params;
+    const EmployerRegisterDTO = req.body;
+
+    await registerEmployerService(eno, EmployerRegisterDTO);
+
+    res.status(200).json({
+        status: 'success',
+        data: EmployerRegisterDTO,
+    })
+
+
+
+}
+
+export { kakaoLogin, registerEmployer }

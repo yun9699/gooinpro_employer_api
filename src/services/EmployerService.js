@@ -2,6 +2,7 @@ import Employer from "../models/Employer.js";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import EmployerDTO from "../dto/employerdto/EmployerDTO.js";
+import EmployerRegisterDTO from "../dto/employerdto/EmployerRegisterDTO.js";
 
 const authKakao = async (accessToken) => {
     console.log("-------------authKakaoService-------------");
@@ -78,4 +79,22 @@ const getEmailFromKakaoAccessToken = async (accessToken) => {
     return { email: kakaoAccount.email };
 };
 
-export { authKakao, returnMember, getEmailFromKakaoAccessToken };
+const registerEmployerService = async (eno, EmployerRegisterDTO) => {
+    const user = await Employer.findOne({eno})
+
+    if(user) {
+        await Employer.update(
+            {
+                ename: EmployerRegisterDTO.ename,
+                eemail: EmployerRegisterDTO.eemail,
+                egender: EmployerRegisterDTO.egender,
+                isNew: false
+            },
+            {
+                where: { eno }
+            },
+        )
+    }
+}
+
+export { authKakao, returnMember, getEmailFromKakaoAccessToken, registerEmployerService };
