@@ -1,5 +1,5 @@
 import express from 'express';
-import models from './models/index.js';
+import models from './src/models/index.js';
 
 const { Employer } = models;
 

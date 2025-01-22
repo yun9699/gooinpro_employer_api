@@ -1,7 +1,5 @@
 import {sequelize} from "../config/db.js";
 import {DataTypes} from "sequelize";
-import Employer from "./Employer.js";
-import PartTimer from "./PartTimer.js";
 
 
 const Complaints = sequelize.define('Complaints', {
