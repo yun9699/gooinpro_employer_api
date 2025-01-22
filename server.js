@@ -8,6 +8,7 @@ import { configureSocket } from './socket/socketIoConfig.js';  // 분리한 소�
 
 // MongoDB 연결
 connectMongoDB();
+import models from './src/models/index.js';
 
 const { Employer } = models;
 
