@@ -1,14 +1,13 @@
 import express from 'express';
-import connectMongoDB from './config/mongoDB.js';
-import models from './models/index.js';
+import connectMongoDB from './src/config/mongoDB.js';
+import models from './src/models/index.js';
 import bodyParser from 'body-parser';  // 요청 본문을 처리하기 위한 body-parser 모듈
 import http from 'http';  // HTTP 서버 생성 모듈
-import ChatRoutes from './routes/ChatRoutes.js';  // 채팅 관련 라우터 불러오기
-import { configureSocket } from './socket/socketIoConfig.js';  // 분리한 소켓 설정 모듈 임포트
+import ChatRoutes from './src/routes/ChatRoutes.js';  // 채팅 관련 라우터 불러오기
+import { configureSocket } from './src/socket/socketIoConfig.js';  // 분리한 소켓 설정 모듈 임포트
 
 // MongoDB 연결
 connectMongoDB();
-import models from './src/models/index.js';
 
 const { Employer } = models;
 
