@@ -1,4 +1,4 @@
-import mapService from '../services/mapService.js';
+import mapService from '../services/MapService.js';
 
 const mapController = {
     // 주소로 좌표 검색

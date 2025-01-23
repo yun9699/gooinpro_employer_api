@@ -1,5 +1,5 @@
 import express from 'express';
-import mapController from '../controllers/mapController.js';
+import mapController from '../controllers/MapController.js';
 
 const router = express.Router();
 
