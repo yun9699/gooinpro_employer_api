@@ -7,11 +7,11 @@ import EmployerRegisterDTO from "../dto/employerdto/EmployerRegisterDTO.js";
 const authKakao = async (accessToken) => {
     console.log("-------------authKakaoService-------------");
 
-    const { email, name } = await getEmailFromKakaoAccessToken(accessToken);
+    const { email } = await getEmailFromKakaoAccessToken(accessToken);
 
     console.log("email: " + email);
 
-    return await returnMember(email, name);
+    return await returnMember(email);
 };
 
 const returnMember = async (eemail) => {
@@ -80,21 +80,27 @@ const getEmailFromKakaoAccessToken = async (accessToken) => {
 };
 
 const registerEmployerService = async (eno, EmployerRegisterDTO) => {
-    const user = await Employer.findOne({eno})
+    console.log("Received EmployerRegisterDTO:", EmployerRegisterDTO); // DTO 확인
 
-    if(user) {
-        await Employer.update(
-            {
-                ename: EmployerRegisterDTO.ename,
-                ebirth: EmployerRegisterDTO.ebirth,
-                egender: EmployerRegisterDTO.egender,
-                isNew: false
-            },
-            {
-                where: { eno }
-            },
-        )
+    const user = await Employer.findOne({ where: { eno } });
+
+    if (!user) {
+        throw new Error("Employer not found");
     }
-}
 
+    console.log("Updating with values:", EmployerRegisterDTO);
+
+    // 데이터를 업데이트합니다.
+    await Employer.update(
+        {
+            ename: EmployerRegisterDTO.ename,
+            ebirth: EmployerRegisterDTO.ebirth,
+            egender: EmployerRegisterDTO.egender,
+            isNew: false  // isNew 필드 업데이트
+        },
+        { where: { eno } }
+    );
+
+    console.log("Employer updated successfully");
+};
 export { authKakao, returnMember, getEmailFromKakaoAccessToken, registerEmployerService };
