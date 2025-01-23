@@ -3,7 +3,7 @@ import {kakaoLogin, registerEmployer} from "../controllers/EmployerController.js
 
 const router = express.Router();
 
-router.post('/kakao', kakaoLogin)
+router.get('/kakao', kakaoLogin)
 
 router.put(`/reg/:eno`, registerEmployer)
 

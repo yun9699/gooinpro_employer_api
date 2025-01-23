@@ -2,33 +2,28 @@ import express from 'express';
 import models from './src/models/index.js';
 import bodyParser from "body-parser";
 import employerRoutes from "./src/routes/employerRoutes.js";
+import corsConfig from "./src/security/CustomSecurityConfig.js";
 
 const { Employer } = models;
 
 const app = express();
 const PORT = 3000;
 
+// CORS 미들웨어 적용
+app.use(corsConfig);
+
+// JSON 요청 본문 처리
 app.use(bodyParser.json());
 
-app.use('/api/v1/login', employerRoutes);
+// 라우트 설정
+app.use('/employer/api/v1/login', employerRoutes);
 
-//  '/employers' 경로로 Employer 데이터 조회
-// app.get('/employers', async (req, res) => {
-//     try {
-//         const employers = await Employer.findAll();
-//         res.json(employers);  // 조회된 데이터를 JSON 형식으로 반환
-//     } catch (err) {
-//         console.error('Employer 조회 실패:', err);
-//         res.status(500).send('서버 오류');
-//     }
-// });
-
+// 기본 라우터 예시
 app.get('/', (req, res) => {
     res.send('Hello, Node.js!');
 });
 
-
-
+// 서버 포트 설정
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

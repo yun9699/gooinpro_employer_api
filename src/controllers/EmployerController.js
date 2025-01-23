@@ -3,8 +3,7 @@ import {authKakao, getEmailFromKakaoAccessToken, registerEmployerService} from "
 
 const kakaoLogin = async (req, res) => {
 
-    const { accessToken } = req.body;
-
+    const { accessToken } = req.query;
     console.log(accessToken);
 
     console.log("0000000000000000000000")
