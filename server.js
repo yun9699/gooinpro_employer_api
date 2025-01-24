@@ -1,7 +1,6 @@
 import express from 'express';
 import connectMongoDB from './src/config/mongoDB.js';
 import models from './src/models/index.js';
-import bodyParser from "body-parser";
 import employerRoutes from "./src/routes/employerRoutes.js";
 import corsConfig from "./src/security/CustomSecurityConfig.js";
 import bodyParser from 'body-parser';  // 요청 본문을 처리하기 위한 body-parser 모듈
@@ -30,10 +29,6 @@ app.use('/employer/api/v1/chatroom', chatRoomRoutes); // 채팅룸 라우터 설
 
 // CORS 미들웨어 적용
 app.use(corsConfig);
-
-// JSON 요청 본문 처리
-app.use(bodyParser.json());
-
 // 라우트 설정
 app.use('/employer/api/v1/login', employerRoutes);
 
