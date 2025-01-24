@@ -102,7 +102,7 @@ const models = {
     JobPostingImage,
     Qna,
     Faq,
-    EChatroom: Chatroom,
+    Chatroom,
     Complaints,
     ComplaintsImage,
     PartTimerImage,

@@ -9,6 +9,14 @@ const Chatroom = sequelize.define('Chatroom', {
         primaryKey: true,
         autoIncrement: true,
     },
+    pno: { // fk 근로자
+        type: DataTypes.BIGINT,
+        allowNull: false,
+    },
+    admno: { // fk 관리자
+        type: DataTypes.BIGINT,
+        allowNull: false,
+    }
 }, {
     tableName: 'tbl_eChatroom',
     timestamps: false,
