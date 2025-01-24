@@ -1,7 +1,7 @@
 import {sequelize} from "../config/db.js";
 import {DataTypes} from "sequelize";
 
-const EChatroom = sequelize.define('eChatroom', {
+const Chatroom = sequelize.define('Chatroom', {
 
     erno: { // pk
         type: DataTypes.BIGINT,
@@ -9,9 +9,17 @@ const EChatroom = sequelize.define('eChatroom', {
         primaryKey: true,
         autoIncrement: true,
     },
+    pno: { // fk 근로자
+        type: DataTypes.BIGINT,
+        allowNull: false,
+    },
+    admno: { // fk 관리자
+        type: DataTypes.BIGINT,
+        allowNull: false,
+    }
 }, {
     tableName: 'tbl_eChatroom',
     timestamps: false,
 })
 
-export default EChatroom;
+export default Chatroom;
