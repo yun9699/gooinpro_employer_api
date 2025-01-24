@@ -4,20 +4,12 @@ import PartTimerReadDTO from "../dto/partTimerdto/PartTimerReadDTO.js";
 
 const getMyPartTimerListService = async (eno) => {
 
-    const partTimers = await models.PartTimer.findAll({
-
-        include: [
-            {
-                model: models.JobMatchings,
-                attributes: [ "pno" ],
-                where: { eno }
-            }
-        ]
+    const partTimers = await models.JobMatchings.findAll({
+        where: { eno },
+        limit: 10
     })
 
-    console.log(JSON.stringify(partTimers, null, 2)); // 보기 좋게 출력
-
-    return partTimers;
+    
 }
 
 const getPartTimerOneService = async (pno) => {
