@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from '../config/db.js';
+import { sequelize } from '../config/MariaDB.js';
 
 const JobPostings = sequelize.define('JobPostings', {
     jpno: {

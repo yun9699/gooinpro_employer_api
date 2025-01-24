@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 // MongoDB 연결
 const connectMongoDB = async () => {
     try {
-        const mongoURI = 'mongodb://gooinprodb:gooinprodb@localhost:27017/gooinprochatdb';
+        const mongoURI = 'mongodb://gooinprochatdbuser:gooinprochatdbuser@localhost:27017/gooinprochatdb';
 
         console.log('MongoDB 연결 시도...');
 
