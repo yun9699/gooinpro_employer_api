@@ -9,7 +9,7 @@ import ComplaintsImage from "./ComplaintsImage.js";
 import PartTimerImage from "./PartTimerImage.js";
 import Qna from "./Qna.js";
 import Faq from "./Faq.js";
-import EChatroom from "./EChatroom.js";
+import Chatroom from "./Chatroom.js";
 import JobPostings from './JobPostings.js';
 import JobMatchings from './JobMatchings.js';
 import JobPostingApplication from "./JobPostingApplication.js";
@@ -20,7 +20,7 @@ import Admin from "./Admin.js";
 
 //Admin
 Admin.hasMany(Qna, { foreignKey: 'admno'});
-Admin.hasMany(EChatroom, { foreignKey: 'admno'});
+Admin.hasMany(Chatroom, { foreignKey: 'admno'});
 Admin.hasMany(Faq, { foreignKey: 'admno'});
 
 //Employer
@@ -85,9 +85,9 @@ Qna.belongsTo(Admin, { foreignKey: 'admno' });
 //FAQ
 Faq.belongsTo(Admin, { foreignKey: 'admno' });
 
-//eChatroom
-EChatroom.belongsTo(PartTimer, { foreignKey: 'pno' });
-EChatroom.belongsTo(Admin, { foreignKey: 'admno' });
+//Chatroom
+Chatroom.belongsTo(PartTimer, { foreignKey: 'pno' });
+Chatroom.belongsTo(Admin, { foreignKey: 'admno' });
 
 const models = {
     Employer,
@@ -102,7 +102,7 @@ const models = {
     JobPostingImage,
     Qna,
     Faq,
-    EChatroom,
+    Chatroom,
     Complaints,
     ComplaintsImage,
     PartTimerImage,
