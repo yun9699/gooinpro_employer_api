@@ -1,6 +1,6 @@
 
 
-import {sequelize} from "../config/db.js";
+import {sequelize} from "../config/MariaDB.js";
 import {DataTypes} from "sequelize";
 import Employer from "./Employer.js";
 import PartTimer from "./PartTimer.js";
