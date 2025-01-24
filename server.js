@@ -1,5 +1,9 @@
 import express from 'express';
-import models from './models/index.js';
+import models from './src/models/index.js';
+import mapRoutes from './src/routes/MapRoutes.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const { Employer } = models;
 
@@ -9,7 +13,7 @@ const PORT = 3000;
 // 미들웨어 설정
 app.use(express.json());
 
-// 라우터 연결
+// maps 라우터 연결
 app.use('/api/map', mapRoutes);
 
 // '/employers' 경로로 Employer 데이터 조회
