@@ -8,9 +8,14 @@ import http from 'http';  // HTTP 서버 생성 모듈
 import ChatRoutes from './src/routes/ChatRoutes.js';  // 채팅 관련 라우터 불러오기
 import { configureSocket } from './src/socket/socketIoConfig.js';  // 분리한 소켓 설정 모듈 임포트
 import chatRoomRoutes from './src/routes/ChatRoomRoutes.js';
+import mapRoutes from './src/routes/MapRoutes.js';
+import dotenv from 'dotenv';
 
 // MongoDB 연결
 connectMongoDB();
+
+// .env 연결
+dotenv.config();
 
 const { Employer } = models;
 
@@ -31,6 +36,22 @@ app.use('/employer/api/v1/chatroom', chatRoomRoutes); // 채팅룸 라우터 설
 app.use(corsConfig);
 // 라우트 설정
 app.use('/employer/api/v1/login', employerRoutes);
+// 미들웨어 설정
+app.use(express.json());
+
+// maps 라우터 연결
+app.use('/api/map', mapRoutes);
+
+// '/employers' 경로로 Employer 데이터 조회
+app.get('/employers', async (req, res) => {
+    try {
+        const employers = await Employer.findAll();
+        res.json(employers);  // 조회된 데이터를 JSON 형식으로 반환
+    } catch (err) {
+        console.error('Employer 조회 실패:', err);
+        res.status(500).send('서버 오류');
+    }
+});
 
 // 기본 라우터 예시
 app.get('/', (req, res) => {
