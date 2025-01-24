@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';  // 요청 본문을 처리하기 위한 b
 import http from 'http';  // HTTP 서버 생성 모듈
 import ChatRoutes from './src/routes/ChatRoutes.js';  // 채팅 관련 라우터 불러오기
 import { configureSocket } from './src/socket/socketIoConfig.js';  // 분리한 소켓 설정 모듈 임포트
+import chatRoomRoutes from './src/routes/ChatRoomRoutes.js';
 
 // MongoDB 연결
 connectMongoDB();
@@ -20,7 +21,9 @@ const PORT = 3000;  // 서버 포트
 // 서버 설정
 app.use(bodyParser.json());  // JSON 형식의 요청 본문 처리
 app.use(express.json());  // Express에서 JSON 처리
-app.use('/employer/api/v1/chatmessage', ChatRoutes(io));  // 채팅 관련 라우터 설정
+
+app.use('/employer/api/v1/chatmessage', ChatRoutes(io));  // 채팅 메세지 라우터 설정
+app.use('/employer/api/v1/chatroom', chatRoomRoutes); // 채팅룸 라우터 설정
 
 // '/employers' 경로로 Employer 데이터 조회
 app.get('/employers', async (req, res) => {
