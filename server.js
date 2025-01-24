@@ -12,6 +12,7 @@ import employerRoutes from "./src/routes/employerRoutes.js";
 import chatRoomRoutes from './src/routes/ChatRoomRoutes.js';
 import ChatRoutes from './src/routes/ChatRoutes.js';
 import mapRoutes from './src/routes/MapRoutes.js';
+import PartTimerRoutes from "./src/routes/PartTimerRoutes.js";
 
 // 환경 변수 로드
 dotenv.config();
@@ -37,6 +38,7 @@ app.use('/employer/api/v1/login', employerRoutes);
 app.use('/employer/api/v1/chatmessage', ChatRoutes(io));
 app.use('/employer/api/v1/chatroom', chatRoomRoutes);
 app.use('/api/map', mapRoutes);
+app.use('/employer/api/v1/partTimer', PartTimerRoutes);
 
 // 서버 시작
 server.listen(PORT, () => {
