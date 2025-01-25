@@ -1,15 +1,17 @@
 
 import models from "../models/index.js";
 import PartTimerReadDTO from "../dto/partTimerdto/PartTimerReadDTO.js";
+import PartTimerListDTO from "../dto/partTimerdto/PartTimerListDTO.js";
 
 const getMyPartTimerListService = async (eno) => {
 
     const partTimers = await models.JobMatchings.findAll({
         where: { eno },
-        limit: 10
+        limit: 10,
+
     })
 
-    
+
 }
 
 const getPartTimerOneService = async (pno) => {

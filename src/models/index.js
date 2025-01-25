@@ -28,6 +28,7 @@ Employer.hasMany(WorkLogs, { foreignKey: 'eno' });
 Employer.hasMany(Review, { foreignKey: 'eno' });
 Employer.hasMany(WorkPlace, { foreignKey: 'eno' });
 Employer.hasMany(Complaints, { foreignKey: 'eno' });
+Employer.hasMany(JobMatchings, { foreignKey: 'eno' });
 
 //PartTImer
 PartTimer.hasMany(WorkLogs, { foreignKey: 'pno' });
@@ -54,7 +55,6 @@ WorkPlace.belongsTo(Employer, { foreignKey: 'eno' });
 
 // JobPostings
 JobPostings.belongsTo(Employer, { foreignKey: 'eno' });
-JobPostings.hasMany(JobMatchings, { foreignKey: 'jpno' });
 
 // JobMatchings
 JobMatchings.belongsTo(PartTimer, { foreignKey: 'pno' });
