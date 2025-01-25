@@ -3,11 +3,16 @@ import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import EmployerDTO from "../dto/employerdto/EmployerDTO.js";
 import EmployerRegisterDTO from "../dto/employerdto/EmployerRegisterDTO.js";
+import EmployerReadDTO from "../dto/employerdto/EmployerReadDTO.js";
 
 const authKakao = async (accessToken) => {
     console.log("-------------authKakaoService-------------");
 
+    console.log("22222222222222")
+
     const { email } = await getEmailFromKakaoAccessToken(accessToken);
+
+    console.log("55555555555555")
 
     console.log("email: " + email);
 
@@ -15,7 +20,8 @@ const authKakao = async (accessToken) => {
 };
 
 const returnMember = async (eemail) => {
-    console.log("444444444444444444");
+
+    console.log("66666666666666666")
 
     const user = await Employer.findOne({ where: { eemail }});
 
@@ -45,7 +51,6 @@ const returnMember = async (eemail) => {
         isNew: true,
     });
 
-    console.log("555555555555555");
 
     return new EmployerDTO(
         newUser.eno,
@@ -61,7 +66,8 @@ const returnMember = async (eemail) => {
 
 // 카카오 액세스 토큰을 통해 이메일을 추출
 const getEmailFromKakaoAccessToken = async (accessToken) => {
-    console.log("222222222222222");
+
+    console.log("3333333333333");
 
     const KakaoGetUserURL = 'https://kapi.kakao.com/v2/user/me';
 
@@ -73,8 +79,8 @@ const getEmailFromKakaoAccessToken = async (accessToken) => {
     });
     const kakaoAccount = response.data.kakao_account;
 
+    console.log("4444444444444")
 
-    console.log("333333333333333333");
 
     return { email: kakaoAccount.email };
 };
@@ -103,4 +109,26 @@ const registerEmployerService = async (eno, EmployerRegisterDTO) => {
 
     console.log("Employer updated successfully");
 };
-export { authKakao, returnMember, getEmailFromKakaoAccessToken, registerEmployerService };
+
+const ReadEmployer = async (eno) => {
+    console.log("Employer Read:", eno);
+
+    const user = await Employer.findOne({
+        where: {
+            eno,
+            edelete : false
+        },
+    })
+    console.log(user);
+
+    return new EmployerReadDTO(
+        user.eno,
+        user.eemail,
+        user.ename,
+        user.ebirth,
+        user.egender
+    )
+
+
+}
+export { authKakao, returnMember, getEmailFromKakaoAccessToken, registerEmployerService, ReadEmployer };
