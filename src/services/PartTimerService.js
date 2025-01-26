@@ -1,7 +1,8 @@
 import models from "../models/index.js";
 import PartTimerReadDTO from "../dto/partTimerdto/PartTimerReadDTO.js";
 import PartTimerListDTO from "../dto/partTimerdto/PartTimerListDTO.js";
-import {col, fn, literal} from "sequelize";
+import {QueryTypes} from "sequelize";
+import {sequelize} from "../config/MariaDB.js";
 
 // 내 근로자 리스트 출력
 // select
@@ -27,45 +28,38 @@ import {col, fn, literal} from "sequelize";
 // wl.pno
 // ;    --> Query
 const getMyPartTimerListService = async (eno) => {
+    const query = `
+        SELECT
+            wl.pno,
+            MAX(jme.pname) AS pname,
+            COUNT(wl.wlworkStatus) AS workDaysCount,
+            SUM(CASE WHEN wl.wlworkStatus = 0 THEN 1 ELSE 0 END) AS onTimeCount,
+            SUM(CASE WHEN wl.wlworkStatus = 1 THEN 1 ELSE 0 END) AS lateCount,
+            SUM(CASE WHEN wl.wlworkStatus = 2 THEN 1 ELSE 0 END) AS earlyLeaveCount,
+            SUM(CASE WHEN wl.wlworkStatus = 3 THEN 1 ELSE 0 END) AS absenceCount
+        FROM
+            tbl_workLogs wl
+        JOIN (
+            SELECT
+                jm.pno,
+                pt.pname
+            FROM
+                tbl_jobMatchings jm
+            JOIN tbl_employer e ON jm.eno = e.eno
+            JOIN tbl_partTimer pt ON jm.pno = pt.pno
+            WHERE
+                e.eno = :eno AND jm.jmdelete = FALSE
+        ) jme ON wl.pno = jme.pno
+        GROUP BY
+            wl.pno
+    `;
 
-    const result = await models.WorkLogs.findAll({
-        attributes: [
-            'pno',
-            [fn('max', col('jme.pname')), 'pname'],  // max(pname) as pname
-            [fn('count', col('wlworkStatus')), 'workDaysCount'],
-            [fn('sum', literal("CASE WHEN wlworkStatus = 0 THEN 1 ELSE 0 END")), 'onTimeCount'],
-            [fn('sum', literal("CASE WHEN wlworkStatus = 1 THEN 1 ELSE 0 END")), 'lateCount'],
-            [fn('sum', literal("CASE WHEN wlworkStatus = 2 THEN 1 ELSE 0 END")), 'earlyLeaveCount'],
-            [fn('sum', literal("CASE WHEN wlworkStatus = 3 THEN 1 ELSE 0 END")), 'absenceCount']
-        ],
-        include: [
-            {
-                model: models.JobMatchings,
-                as: 'jobMatchings',
-                required: true,  // INNER JOIN
-                where: {
-                    eno: eno,
-                    jmdelete: false,
-                },
-                include: [
-                    {
-                        model: models.Employer,
-                        as: 'employer',
-                        required: true,  // INNER JOIN
-                    },
-                    {
-                        model: models.PartTimer,
-                        as: 'partTimer',
-                        required: true,  // INNER JOIN
-                    }
-                ]
-            }
-        ],
-        group: ['WorkLogs.pno'],
-        raw: true
+    const results = await sequelize.query(query, {
+        replacements: { eno }, // :eno 바인딩
+        type: QueryTypes.SELECT, // SELECT 쿼리 타입 명시
     });
 
-    return result.map(partTimer => new PartTimerListDTO(
+    return results.map(partTimer => new PartTimerListDTO(
         partTimer.pno,
         partTimer.pname,
         partTimer.workDaysCount,
