@@ -5,70 +5,66 @@ import {QueryTypes} from "sequelize";
 import {sequelize} from "../config/MariaDB.js";
 
 // 내 근로자 리스트 출력
-// select
-// wl.pno,
-//     max(jme.pname) as pname,
-//     count(wlworkStatus) as workDaysCount,
-//     sum(case when wlworkStatus = 0 then 1 else 0 end) as 'onTimeCount',
-//     sum(case when wlworkStatus = 1 then 1 else 0 end) as 'lateCount',
-//     sum(case when wlworkStatus = 2 then 1 else 0 end) as 'earlyLeaveCount',
-//     sum(case when wlworkStatus = 3 then 1 else 0 end) as 'absenceCount'
-// from
-// tbl_workLogs wl join (
-//     select
-// jm.pno, pt.pname
-// from
-// tbl_jobMatchings jm
-// join tbl_employer e on jm.eno = e.eno
-// join tbl_partTimer pt on jm.pno = pt.pno
-// where
-// e.eno = 16 and jm.jmdelete = false
-// ) jme on wl.pno = jme.pno
-// group by
-// wl.pno
-// ;    --> Query
-const getMyPartTimerListService = async (eno) => {
-    const query = `
-        SELECT
-            wl.pno,
-            MAX(jme.pname) AS pname,
-            COUNT(wl.wlworkStatus) AS workDaysCount,
-            SUM(CASE WHEN wl.wlworkStatus = 0 THEN 1 ELSE 0 END) AS onTimeCount,
-            SUM(CASE WHEN wl.wlworkStatus = 1 THEN 1 ELSE 0 END) AS lateCount,
-            SUM(CASE WHEN wl.wlworkStatus = 2 THEN 1 ELSE 0 END) AS earlyLeaveCount,
-            SUM(CASE WHEN wl.wlworkStatus = 3 THEN 1 ELSE 0 END) AS absenceCount
-        FROM
-            tbl_workLogs wl
-        JOIN (
+const getMyPartTimerListService = async (eno, page, size) => {
+
+    const offset = page - 1;
+
+    try {
+        const query = `
             SELECT
-                jm.pno,
-                pt.pname
+                wl.pno,
+                MAX(jme.pname) AS pname,
+                COUNT(wl.wlworkStatus) AS workDaysCount,
+                SUM(CASE WHEN wl.wlworkStatus = 0 THEN 1 ELSE 0 END) AS onTimeCount,
+                SUM(CASE WHEN wl.wlworkStatus = 1 THEN 1 ELSE 0 END) AS lateCount,
+                SUM(CASE WHEN wl.wlworkStatus = 2 THEN 1 ELSE 0 END) AS earlyLeaveCount,
+                SUM(CASE WHEN wl.wlworkStatus = 3 THEN 1 ELSE 0 END) AS absenceCount
             FROM
-                tbl_jobMatchings jm
-            JOIN tbl_employer e ON jm.eno = e.eno
-            JOIN tbl_partTimer pt ON jm.pno = pt.pno
-            WHERE
-                e.eno = :eno AND jm.jmdelete = FALSE
-        ) jme ON wl.pno = jme.pno
-        GROUP BY
-            wl.pno
-    `;
+                tbl_workLogs wl
+            JOIN (
+                SELECT
+                    jm.pno,
+                    pt.pname
+                FROM
+                    tbl_jobMatchings jm
+                JOIN tbl_employer e ON jm.eno = e.eno
+                JOIN tbl_partTimer pt ON jm.pno = pt.pno
+                WHERE
+                    e.eno = :eno AND jm.jmdelete = FALSE
+            ) jme ON wl.pno = jme.pno
+            GROUP BY
+                wl.pno
+            LIMIT
+                :offset, :size
+            
+        `;
 
-    const results = await sequelize.query(query, {
-        replacements: { eno }, // :eno 바인딩
-        type: QueryTypes.SELECT, // SELECT 쿼리 타입 명시
-    });
+        const results = await sequelize.query(query, {
+            replacements: { eno, offset, size },
+            type: QueryTypes.SELECT,
+        });
 
-    return results.map(partTimer => new PartTimerListDTO(
-        partTimer.pno,
-        partTimer.pname,
-        partTimer.workDaysCount,
-        partTimer.onTimeCount,
-        partTimer.lateCount,
-        partTimer.earlyLeaveCount,
-        partTimer.absenceCount
-    ));
+        return results.map(partTimer => new PartTimerListDTO(
+            partTimer.pno,
+            partTimer.pname,
+            partTimer.workDaysCount,
+            partTimer.onTimeCount,
+            partTimer.lateCount,
+            partTimer.earlyLeaveCount,
+            partTimer.absenceCount
+        ));
+    } catch (error) {
+        console.error("Error fetching part-timer list:", error);
+        throw new Error("Failed to fetch part-timer list");
+    }
+};
+
+//내 근로자 수 count
+const getMyPartTimerCountService = async (eno) => {
+
+    return await models.JobMatchings.count(eno);
 }
+
 
 //내 근로자 상세 확인
 const getPartTimerOneService = async (pno) => {
@@ -92,4 +88,4 @@ const getPartTimerOneService = async (pno) => {
     }
 }
 
-export { getMyPartTimerListService, getPartTimerOneService };
+export { getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService };

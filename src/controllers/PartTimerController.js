@@ -1,14 +1,26 @@
-import {getMyPartTimerListService, getPartTimerOneService} from "../services/PartTimerService.js";
+import {
+    getMyPartTimerCountService,
+    getMyPartTimerListService,
+    getPartTimerOneService
+} from "../services/PartTimerService.js";
+import PageRequestDTO from "../dto/common/PageRequestDTO.js";
+import PageResponseDTO from "../dto/common/PageResponseDTO.js";
 
 const getMyPartTimerList = async (req, res) => {
 
     const { eno } = req.params;
 
-    const partTimers = await getMyPartTimerListService(eno);
+    console.log(req.query);
+
+    const dtoList = await getMyPartTimerListService(eno, 1, 10);
+    const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
+    const totalCount = await getMyPartTimerCountService(eno);
+
+    const returnDTO = new PageResponseDTO(dtoList, pageRequestDTO, totalCount);
 
     res.status(200).json({
         status: 'success',
-        data: partTimers
+        data: returnDTO
     })
 }
 
