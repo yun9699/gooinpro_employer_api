@@ -14,6 +14,7 @@ import mapRoutes from './src/routes/MapRoutes.js';
 import JWTCheckFilter from "./src/security/filter/JWTCheckFilter.js";
 import EmployerLoginRoutes from "./src/routes/EmployerLoginRoutes.js";
 import EmployerRoutes from "./src/routes/EmployerRoutes.js";
+import JWTNotFilter from "./src/security/filter/JWTNotFilter.js";
 
 // 환경 변수 로드
 dotenv.config();
@@ -36,7 +37,8 @@ const excludedPaths = ['/employer/api/v1/login'];
 app.use(bodyParser.json()); // JSON 형식 요청 본문 처리
 app.use(express.json());    // Express JSON 처리
 app.use(corsConfig);        // CORS 설정
-app.use(JWTCheckFilter(excludedPaths));
+// app.use(JWTCheckFilter(excludedPaths));
+app.use(JWTNotFilter());
 
 // 라우터 연결
 app.use('/employer/api/v1/login', EmployerLoginRoutes);
