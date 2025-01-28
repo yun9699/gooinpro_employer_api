@@ -1,11 +1,12 @@
 import {
     getMyPartTimerCountService,
     getMyPartTimerListService,
-    getPartTimerOneService
+    getPartTimerOneService, getPartTimerWorkStatusService
 } from "../services/PartTimerService.js";
 import PageRequestDTO from "../dto/common/PageRequestDTO.js";
 import PageResponseDTO from "../dto/common/PageResponseDTO.js";
 
+//내 근로자 리스트 호출
 const getMyPartTimerList = async (req, res) => {
 
     const { eno } = req.params;
@@ -22,18 +23,33 @@ const getMyPartTimerList = async (req, res) => {
     })
 }
 
+//내 직원 read
 const getPartTimerOne = async (req, res) => {
 
     const { pno } = req.params;
 
     const partTimer = await getPartTimerOneService(pno);
+    const workLogs = await getPartTimerWorkStatusService(pno);
 
-    console.log(partTimer);
+    const data = { partTimer, workLogs }
 
     res.status(200).json({
         status: 'success',
-        data: partTimer
+        data: data,
     })
 }
 
-export { getMyPartTimerList, getPartTimerOne }
+//내 직원 근태 확인
+const getPartTimerWorkStatus = async (req, res) => {
+
+    const { pno } = req.params;
+
+    const workLogs = await getPartTimerWorkStatusService(pno);
+
+    res.status(200).json({
+        status: 'success',
+        data: workLogs,
+    })
+}
+
+export { getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus }

@@ -2,7 +2,8 @@ import models from "../models/index.js";
 import PartTimerReadDTO from "../dto/partTimerdto/PartTimerReadDTO.js";
 import PartTimerListDTO from "../dto/partTimerdto/PartTimerListDTO.js";
 import {sequelize} from "../config/MariaDB.js";
-import {QueryTypes} from "sequelize";
+import {col, fn, literal, QueryTypes} from "sequelize";
+import PartTimerWorkStatusDTO from "../dto/partTimerdto/PartTimerWorkStatusDTO.js";
 
 // 내 근로자 리스트 출력
 const getMyPartTimerListService = async (eno, page, size) => {
@@ -52,23 +53,63 @@ const getMyPartTimerCountService = async (eno) => {
 //내 근로자 상세 확인
 const getPartTimerOneService = async (pno) => {
 
-    const partTimer = await models.PartTimer.findOne({ where: { pno }})
+    const result = await sequelize.query(
+        `
+        select
+            pi.pifilename, p.pname, p.pgender, p.pbirth, p.pemail,
+            jp.jpname
+        from
+            tbl_partTimer p
+            join tbl_jobMatchings jm on p.pno = jm.pno
+            join tbl_jobPostings jp on jm.jpno = jp.jpno
+            left join tbl_partTimerImage pi on p.pno = pi.pno
+        where
+            p.pno = :pno
+            `,
+        {
+            type: QueryTypes.SELECT,
+            replacements: { pno }
+        }
+    )
 
-    console.log(pno);
-    console.log(partTimer);
+    const partTimer = result[0];
 
-    if(partTimer) {
-        return new PartTimerReadDTO(
-
-            partTimer.pno,
-            partTimer.pname,
-            partTimer.pemail,
-            partTimer.pbirth,
-            partTimer.pgender,
-            partTimer.proadAddress,
-            partTimer.pdetailAddress
-        )
-    }
+    return new PartTimerReadDTO(
+        partTimer.pifilename,
+        partTimer.pname,
+        partTimer.pgender,
+        partTimer.pbirth,
+        partTimer.jpname,
+        partTimer.pemail
+    )
 }
 
-export { getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService };
+//partTimer 별 근태 현황
+const getPartTimerWorkStatusService = async (pno) => {
+
+    const result = await models.WorkLogs.findAll({
+        attributes: [
+            [fn('count', col('wlworkStatus')), 'workDaysCount'],
+            [fn('sum', literal('CASE WHEN wlworkStatus = 0 THEN 1 ELSE 0 END')), 'onTimeCount'],
+            [fn('sum', literal('CASE WHEN wlworkStatus = 1 THEN 1 ELSE 0 END')), 'lateCount'],
+            [fn('sum', literal('CASE WHEN wlworkStatus = 2 THEN 1 ELSE 0 END')), 'earlyLeaveCount'],
+            [fn('sum', literal('CASE WHEN wlworkStatus = 3 THEN 1 ELSE 0 END')), 'absenceCount'],
+        ],
+        where: {
+            pno: pno
+        },
+        raw: true //결과를 Sequelize 객체가 아닌 JavaScript 객체로 반환
+    })
+
+    const workStatus = result[0];
+
+    return new PartTimerWorkStatusDTO(
+        workStatus.workDaysCount,
+        workStatus.onTimeCount,
+        workStatus.lateCount,
+        workStatus.earlyLeaveCount,
+        workStatus.absenceCount
+    )
+}
+
+export { getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService };
