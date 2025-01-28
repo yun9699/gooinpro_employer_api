@@ -1,7 +1,7 @@
 
 import { findChatRoom, findChatPartRoom, deleteChatRoom } from '../services/ChatRoomService.js';
-import { ChatRoomAddAdminDTO } from '../dto/ChatRoomAddAdminDTO.js';
-import { ChatRoomAddPartDTO } from '../dto/ChatRoomAddPartDTO.js';
+import { ChatRoomAddAdminDTO } from '../dto/chatroomdto/ChatRoomAddAdminDTO.js';
+import { ChatRoomAddPartDTO } from '../dto/chatroomdto/ChatRoomAddPartDTO.js';
 
 
 // 관리자 채팅방 조회
