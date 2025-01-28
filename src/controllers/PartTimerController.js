@@ -10,9 +10,7 @@ const getMyPartTimerList = async (req, res) => {
 
     const { eno } = req.params;
 
-    console.log(req.query);
-
-    const dtoList = await getMyPartTimerListService(eno, 1, 10);
+    const dtoList = await getMyPartTimerListService(eno, req.query.page, 10);
     const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
     const totalCount = await getMyPartTimerCountService(eno);
 

@@ -1,15 +1,12 @@
 
 class PartTimerReadDTO {
 
-    constructor(pno, pname, pemail, pbirth, pgender, proadAddress, pdetailAddress) {
+    constructor(pno, pfilename, pname, jpname) {
 
         this.pno = pno;
+        this.pfilename = pfilename;
         this.pname = pname;
-        this.pemail = pemail;
-        this.pbirth = pbirth;
-        this.pgender = pgender;
-        this.proadAddress = proadAddress;
-        this.pdetailAddress = pdetailAddress;
+        this.jpname = jpname;
     }
 }
 
