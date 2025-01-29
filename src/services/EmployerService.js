@@ -3,19 +3,39 @@ import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import EmployerDTO from "../dto/employerdto/EmployerDTO.js";
 import EmployerRegisterDTO from "../dto/employerdto/EmployerRegisterDTO.js";
+import EmployerReadDTO from "../dto/employerdto/EmployerReadDTO.js";
 
 const authKakao = async (accessToken) => {
     console.log("-------------authKakaoService-------------");
 
+    console.log("22222222222222")
+
     const { email } = await getEmailFromKakaoAccessToken(accessToken);
+
+    console.log("55555555555555")
 
     console.log("email: " + email);
 
     return await returnMember(email);
 };
 
+const authGoogle = async (accessToken) => {
+    console.log("-------authGoogleService-------------");
+
+    console.log("22222222222222")
+
+    const { email } = await getEmailFromGoogleAccessToken(accessToken);
+
+    console.log("55555555555555")
+
+    console.log("email: " + email);
+
+    return await returnMember(email);
+}
+
 const returnMember = async (eemail) => {
-    console.log("444444444444444444");
+
+    console.log("66666666666666666")
 
     const user = await Employer.findOne({ where: { eemail }});
 
@@ -45,7 +65,6 @@ const returnMember = async (eemail) => {
         isNew: true,
     });
 
-    console.log("555555555555555");
 
     return new EmployerDTO(
         newUser.eno,
@@ -61,7 +80,8 @@ const returnMember = async (eemail) => {
 
 // 카카오 액세스 토큰을 통해 이메일을 추출
 const getEmailFromKakaoAccessToken = async (accessToken) => {
-    console.log("222222222222222");
+
+    console.log("3333333333333");
 
     const KakaoGetUserURL = 'https://kapi.kakao.com/v2/user/me';
 
@@ -73,11 +93,34 @@ const getEmailFromKakaoAccessToken = async (accessToken) => {
     });
     const kakaoAccount = response.data.kakao_account;
 
+    console.log("4444444444444")
 
-    console.log("333333333333333333");
 
     return { email: kakaoAccount.email };
 };
+
+const getEmailFromGoogleAccessToken = async (accessToken) => {
+
+    console.log("3333333333333");
+
+    const GoogleGetUserURL = 'https://www.googleapis.com/oauth2/v3/userinfo';
+
+    const response = await axios.get(GoogleGetUserURL, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+
+    console.log("------------------------")
+    console.log(response.data);
+    console.log(response.data.email);
+
+    const GoogleAccount = response.data.email
+
+    console.log("4444444444444")
+
+    return { email: GoogleAccount };
+}
 
 const registerEmployerService = async (eno, EmployerRegisterDTO) => {
     console.log("Received EmployerRegisterDTO:", EmployerRegisterDTO); // DTO 확인
@@ -103,4 +146,26 @@ const registerEmployerService = async (eno, EmployerRegisterDTO) => {
 
     console.log("Employer updated successfully");
 };
-export { authKakao, returnMember, getEmailFromKakaoAccessToken, registerEmployerService };
+
+const ReadEmployer = async (eno) => {
+    console.log("Employer Read:", eno);
+
+    const user = await Employer.findOne({
+        where: {
+            eno,
+            edelete : false
+        },
+    })
+    console.log(user);
+
+    return new EmployerReadDTO(
+        user.eno,
+        user.eemail,
+        user.ename,
+        user.ebirth,
+        user.egender
+    )
+
+
+}
+export { authKakao, authGoogle, returnMember, getEmailFromKakaoAccessToken, registerEmployerService, ReadEmployer };

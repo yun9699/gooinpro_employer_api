@@ -1,5 +1,5 @@
 
-import { ChatRoomGetDTO } from '../dto/ChatRoomGetDTO.js';
+import { ChatRoomGetDTO } from '../dto/chatroomdto/ChatRoomGetDTO.js';
 import ChatRoom from '../models/ChatRoom.js';
 import Admin from '../models/Admin.js';
 import PartTimer from '../models/PartTimer.js';

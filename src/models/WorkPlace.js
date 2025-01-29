@@ -1,4 +1,4 @@
-import {sequelize} from "../config/db.js";
+import {sequelize} from "../config/MariaDB.js";
 import {DataTypes} from "sequelize";
 
 //근무지 주소
