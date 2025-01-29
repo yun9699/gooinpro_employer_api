@@ -8,21 +8,18 @@ const JobPostingApplication = sequelize.define('JobPostingApplication', {
         autoIncrement: true,
         allowNull: false
     },
-    jpno: {
-        type: DataTypes.BIGINT,
-        allowNull: false
-    },
-    ptno: {
-        type: DataTypes.BIGINT,
-        allowNull: false
-    },
     jpacontent: {
         type: DataTypes.STRING(500),
         allowNull: true
     },
-    status: {
-        type: DataTypes.STRING,
+    jpahourlyRate: {
+        type: DataTypes.INTEGER,
         allowNull: true
+    },
+    jpadelete: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     tableName: 'tbl_jobPostingApplication',

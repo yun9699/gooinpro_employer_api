@@ -1,4 +1,6 @@
 import {
+    getJobApplicationsCountService,
+    getJobApplicationsListService,
     getMyPartTimerCountService,
     getMyPartTimerListService,
     getPartTimerOneService, getPartTimerWorkStatusService
@@ -11,7 +13,7 @@ const getMyPartTimerList = async (req, res) => {
 
     const { eno } = req.params;
 
-    const dtoList = await getMyPartTimerListService(eno, req.query.page, 10);
+    const dtoList = await getMyPartTimerListService(eno, req.query.page, req.query.size);
     const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
     const totalCount = await getMyPartTimerCountService(eno);
 
@@ -52,4 +54,21 @@ const getPartTimerWorkStatus = async (req, res) => {
     })
 }
 
-export { getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus }
+//지원자 리스트 get
+const getApplicantList = async (req, res) => {
+
+    const { eno } = req.params;
+
+    const dtoList = await getJobApplicationsListService(eno, req.query.page, req.query.size);
+    const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
+    const totalCount = await getJobApplicationsCountService(eno);
+
+    const returnDTO = new PageResponseDTO(dtoList, pageRequestDTO, totalCount);
+
+    res.status(200).json({
+        status: 'success',
+        data: returnDTO
+    })
+}
+
+export { getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList }

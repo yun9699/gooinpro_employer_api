@@ -4,6 +4,7 @@ import PartTimerListDTO from "../dto/partTimerdto/PartTimerListDTO.js";
 import {sequelize} from "../config/MariaDB.js";
 import {col, fn, literal, QueryTypes} from "sequelize";
 import PartTimerWorkStatusDTO from "../dto/partTimerdto/PartTimerWorkStatusDTO.js";
+import ApplicantListDTO from "../dto/partTimerdto/ApplicantListDTO.js";
 
 // 내 근로자 리스트 출력
 const getMyPartTimerListService = async (eno, page, size) => {
@@ -32,7 +33,7 @@ const getMyPartTimerListService = async (eno, page, size) => {
     `,
         {
             type: QueryTypes.SELECT,
-            replacements: { eno, offset, limit: size }, // 파라미터 바인딩
+            replacements: { eno, offset, limit: Number(size) }, // 파라미터 바인딩
         }
     );
 
@@ -46,7 +47,14 @@ const getMyPartTimerListService = async (eno, page, size) => {
 //내 근로자 수 count
 const getMyPartTimerCountService = async (eno) => {
 
-    return await models.JobMatchings.count(eno);
+    return await models.JobMatchings.count({
+        distinct: true,
+        where: {
+            eno: eno,
+            jmdelete: false
+        },
+        col: 'pno'
+    });
 }
 
 
@@ -112,4 +120,58 @@ const getPartTimerWorkStatusService = async (pno) => {
     )
 }
 
-export { getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService };
+//내 지원자 리스트 출력
+const getJobApplicationsListService = async (eno, page, size) => {
+
+    const offset = page - 1;
+
+    const result = await models.PartTimer.findAll({
+        attributes: ['pname'],
+        include: [
+            {
+                model: models.JobPostings,
+                as: 'JobPostings',
+                attributes: ['jpname'],
+            },
+            {
+                model: models.JobPostingApplication,
+                as: 'JobPostingApplication',
+                attributes: ['pno'],
+                where: {
+                    eno: eno,
+                    jpadelete: false
+                }
+            },
+            {
+                model: models.PartTimerImage,
+                as: 'PartTimerImage',
+                attributes: ['pifilename'],
+            },
+        ],
+        order: [['pno', 'ASC']], // pno ascending
+        limit: size,
+        offset: offset,
+        replacements: { eno }
+    });
+
+    return result.map(
+        (row) =>
+            new ApplicantListDTO(row.pno, row.pifilename, row.pname, row.jpname, row.jpahourlyRate)
+    )
+}
+
+// 내 지원자 수 count
+const getJobApplicationsCountService = async (eno) => {
+
+    return await models.JobPostingApplication.count({
+        where: {
+            eno: eno,
+            jpadelete: false
+        }
+    })
+}
+
+export {
+    getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService,
+    getJobApplicationsListService, getJobApplicationsCountService
+};
