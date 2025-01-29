@@ -10,6 +10,10 @@ const WorkPlace = sequelize.define('WorkPlace', {
         primaryKey: true,
         autoIncrement: true
     },
+    eno: {  // Foreign Key - 관계는 index.js에서 설정
+        type: DataTypes.BIGINT,
+        allowNull: false
+    },
     wroadAddress: { //도로명 주소
         type: DataTypes.STRING,
         allowNull: false
