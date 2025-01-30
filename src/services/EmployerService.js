@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import EmployerDTO from "../dto/employerdto/EmployerDTO.js";
 import EmployerRegisterDTO from "../dto/employerdto/EmployerRegisterDTO.js";
 import EmployerReadDTO from "../dto/employerdto/EmployerReadDTO.js";
+import EmployerEditDTO from "../dto/employerdto/EmployerEditDTO.js";
 
 const authKakao = async (accessToken) => {
     console.log("-------------authKakaoService-------------");
@@ -227,5 +228,30 @@ const ReadEmployer = async (eno) => {
 
 }
 
+const EditEmployer = async (eno, updateData) => {
+    console.log("Employer Edit:", eno);
 
-export { authKakao, authGoogle, authNaver, returnMember, registerEmployerService, ReadEmployer, useAuthTokenGetNaverAccessToken };
+    const user = await Employer.update(updateData,{
+        where: {
+            eno,
+            edelete: false
+        }
+    })
+
+    const updatedEmployer = await Employer.findOne({
+        where: {
+            eno,
+            edelete: false
+        }
+    })
+
+    console.log(user);
+
+    return new EmployerEditDTO(
+        updatedEmployer.ename,
+        updatedEmployer.ebirth
+    )
+}
+
+
+export { authKakao, authGoogle, authNaver, returnMember, registerEmployerService, ReadEmployer, useAuthTokenGetNaverAccessToken, EditEmployer };

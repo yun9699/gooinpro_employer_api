@@ -1,7 +1,7 @@
 import {
     authGoogle,
     authKakao,
-    authNaver,
+    authNaver, EditEmployer,
     ReadEmployer,
     registerEmployerService,
     useAuthTokenGetNaverAccessToken
@@ -154,6 +154,21 @@ const EmployerRead = async (req, res) => {
 
 }
 
+const EmployerEdit = async (req, res) => {
+
+    console.log("EmployerEdit")
+
+    const { eno } = req.params;
+    const updateData = req.body;
+
+    const EmployerEditDTO = await EditEmployer(eno, updateData);
+
+    res.status(200).json({
+        status: 'success',
+        data: EmployerEditDTO,
+    })
+}
+
 
 const refreshToken = (req, res) => {
 
@@ -193,4 +208,4 @@ const refreshToken = (req, res) => {
         });
     }
 }
-export { kakaoLogin, GoogleLogin, NaverLogin, registerEmployer, EmployerRead, refreshToken, NaverGetAuthToken }
+export { kakaoLogin, GoogleLogin, NaverLogin, NaverGetAuthToken, registerEmployer, EmployerRead, EmployerEdit, refreshToken, }
