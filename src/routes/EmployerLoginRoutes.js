@@ -1,7 +1,7 @@
 import express from 'express';
 import {
     GoogleLogin,
-    kakaoLogin,
+    kakaoLogin, NaverGetAuthToken,
     NaverLogin,
     refreshToken,
     registerEmployer
@@ -15,6 +15,8 @@ router.get('/kakao', kakaoLogin)
 router.get('/google', GoogleLogin)
 
 router.get('/naver', NaverLogin)
+
+router.post('/naver/authcode', NaverGetAuthToken)
 
 router.put(`/reg/:eno`, registerEmployer)
 

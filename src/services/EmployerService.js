@@ -160,6 +160,26 @@ const getEmailFromNaverAccessToken = async (accessToken) => {
     return { email: NaverAccount };
 }
 
+const useAuthTokenGetNaverAccessToken = async (params) => {
+
+
+    const header = {
+        headers: {
+            "Content-Type":  "application/x-www-form-urlencoded"
+        }
+    };
+
+    const access_token_url = `https://nid.naver.com/oauth2.0/token`;
+
+    const res = await axios.post(access_token_url, params, header);
+
+    console.log(res.data.access_token);
+
+    return res.data.access_token;
+
+
+}
+
 const registerEmployerService = async (eno, EmployerRegisterDTO) => {
     console.log("Received EmployerRegisterDTO:", EmployerRegisterDTO); // DTO 확인
 
@@ -206,4 +226,6 @@ const ReadEmployer = async (eno) => {
 
 
 }
-export { authKakao, authGoogle, authNaver, returnMember, registerEmployerService, ReadEmployer };
+
+
+export { authKakao, authGoogle, authNaver, returnMember, registerEmployerService, ReadEmployer, useAuthTokenGetNaverAccessToken };
