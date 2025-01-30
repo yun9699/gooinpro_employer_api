@@ -1,4 +1,4 @@
-import {authGoogle, authKakao, ReadEmployer, registerEmployerService} from "../services/EmployerService.js";
+import {authGoogle, authKakao, authNaver, ReadEmployer, registerEmployerService} from "../services/EmployerService.js";
 import TokenResponseDTO from "../dto/employerdto/TokenResponseDTO.js";
 import JWTUtil from "../security/util/JWTUtil.js";
 
@@ -35,6 +35,28 @@ const GoogleLogin = async (req, res) => {
     console.log(accessToken);
 
     const EmployerDTO = await authGoogle(accessToken);
+
+    console.log("777777777777")
+
+    const tokenResponseDTO = await generateTokenResponseDTO(EmployerDTO);
+
+    console.log("1010101010101010")
+
+    res.status(200).json({
+        status: 'success',
+        data: tokenResponseDTO,
+    })
+
+}
+
+const NaverLogin = async (req, res) => {
+
+    console.log("1111111111111111")
+
+    const { accessToken } = req.query;
+    console.log(accessToken);
+
+    const EmployerDTO = await authNaver(accessToken);
 
     console.log("777777777777")
 
@@ -209,4 +231,4 @@ const refreshToken = (req, res) => {
         });
     }
 }
-export { kakaoLogin, GoogleLogin, registerEmployer, EmployerRead, refreshToken }
+export { kakaoLogin, GoogleLogin, NaverLogin, registerEmployer, EmployerRead, refreshToken }

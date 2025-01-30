@@ -33,6 +33,21 @@ const authGoogle = async (accessToken) => {
     return await returnMember(email);
 }
 
+const authNaver = async (accessToken) => {
+    console.log("-------authNaverService-------------");
+
+    console.log("22222222222222")
+
+    const { email } = await getEmailFromNaverAccessToken(accessToken);
+
+    console.log("55555555555555")
+
+    console.log("email: " + email);
+
+    return await returnMember(email);
+
+}
+
 const returnMember = async (eemail) => {
 
     console.log("66666666666666666")
@@ -122,6 +137,29 @@ const getEmailFromGoogleAccessToken = async (accessToken) => {
     return { email: GoogleAccount };
 }
 
+const getEmailFromNaverAccessToken = async (accessToken) => {
+
+    console.log("3333333333333");
+
+    console.log(accessToken);
+
+    const NaverGetUserURL = 'https://openapi.naver.com/v1/nid/me';
+
+    const response = await axios.get(NaverGetUserURL, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    })
+
+    console.log(response.data.response.email);
+
+    const NaverAccount = response.data.response.email;
+
+    console.log("444444444444")
+
+    return { email: NaverAccount };
+}
+
 const registerEmployerService = async (eno, EmployerRegisterDTO) => {
     console.log("Received EmployerRegisterDTO:", EmployerRegisterDTO); // DTO 확인
 
@@ -168,4 +206,4 @@ const ReadEmployer = async (eno) => {
 
 
 }
-export { authKakao, authGoogle, returnMember, getEmailFromKakaoAccessToken, registerEmployerService, ReadEmployer };
+export { authKakao, authGoogle, authNaver, returnMember, registerEmployerService, ReadEmployer };

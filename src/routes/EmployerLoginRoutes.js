@@ -1,5 +1,11 @@
 import express from 'express';
-import {GoogleLogin, kakaoLogin, refreshToken, registerEmployer} from "../controllers/EmployerController.js";
+import {
+    GoogleLogin,
+    kakaoLogin,
+    NaverLogin,
+    refreshToken,
+    registerEmployer
+} from "../controllers/EmployerController.js";
 
 
 const router = express.Router();
@@ -7,6 +13,8 @@ const router = express.Router();
 router.get('/kakao', kakaoLogin)
 
 router.get('/google', GoogleLogin)
+
+router.get('/naver', NaverLogin)
 
 router.put(`/reg/:eno`, registerEmployer)
 
