@@ -1,5 +1,5 @@
 
-import { ChatRoomGetDTO } from '../dto/ChatRoomGetDTO.js';
+import { ChatRoomGetDTO } from '../dto/chatroomdto/ChatRoomGetDTO.js';
 import ChatRoom from '../models/ChatRoom.js';
 import Admin from '../models/Admin.js';
 import PartTimer from '../models/PartTimer.js';
@@ -7,7 +7,7 @@ import PartTimer from '../models/PartTimer.js';
 
 // 관리자 번호(admno)를 기반으로 채팅방을 조회하거나 없으면 새로 생성
 export const findChatRoom = async (dto) => {
-    // 기존 채팅방 조회
+
     const existingChatRoom = await ChatRoom.findOne({ where: { admno: dto.admno } });
 
     // 채팅방이 이미 존재하면 해당 정보 반환
@@ -25,6 +25,7 @@ export const findChatRoom = async (dto) => {
     const newChatRoom = await ChatRoom.create({ admno: dto.admno });
     return new ChatRoomGetDTO(newChatRoom.erno); // 생성된 채팅방 정보 반환
 };
+
 
 // 참여자 번호(pno)를 기반으로 채팅방을 조회하거나 없으면 새로 생성
 export const findChatPartRoom = async (dto) => {
