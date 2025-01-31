@@ -28,6 +28,7 @@ Employer.hasMany(WorkLogs, { foreignKey: 'eno' });
 Employer.hasMany(Review, { foreignKey: 'eno' });
 Employer.hasMany(WorkPlace, { foreignKey: 'eno' });
 Employer.hasMany(Complaints, { foreignKey: 'eno' });
+Employer.hasMany(Chatroom, { foreignKey: 'eno' });
 
 //PartTImer
 PartTimer.hasMany(WorkLogs, { foreignKey: 'pno' });
