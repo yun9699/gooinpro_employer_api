@@ -125,34 +125,27 @@ const getJobApplicationsListService = async (eno, page, size) => {
 
     const offset = page - 1;
 
-    const result = await models.PartTimer.findAll({
-        attributes: ['pname'],
-        include: [
-            {
-                model: models.JobPostings,
-                as: 'JobPostings',
-                attributes: ['jpname'],
-            },
-            {
-                model: models.JobPostingApplication,
-                as: 'JobPostingApplication',
-                attributes: ['pno'],
-                where: {
-                    eno: eno,
-                    jpadelete: false
-                }
-            },
-            {
-                model: models.PartTimerImage,
-                as: 'PartTimerImage',
-                attributes: ['pifilename'],
-            },
-        ],
-        order: [['pno', 'ASC']], // pno ascending
-        limit: size,
-        offset: offset,
-        replacements: { eno }
-    });
+    const result = await sequelize.query(
+        `
+            select
+                jpa.pno, pi.pifilename, p.pname, jp.jpname, jpa.jpahourlyRate
+            from
+                tbl_jobPostingApplication jpa
+                left join tbl_jobPostings jp on jpa.jpno = jp.jpno
+                left join tbl_partTimer p on jpa.pno = p.pno
+                left join tbl_partTimerImage pi on jpa.pno = pi.pno
+            where
+                jpa.jpadelete = false and jp.eno = :eno
+            order by
+                pno
+            limit
+                0, 10
+            `,
+        {
+            type: QueryTypes.SELECT,
+            replacements: { eno, offset, limit: Number(size) }
+        }
+    )
 
     return result.map(
         (row) =>
@@ -163,12 +156,15 @@ const getJobApplicationsListService = async (eno, page, size) => {
 // 내 지원자 수 count
 const getJobApplicationsCountService = async (eno) => {
 
-    return await models.JobPostingApplication.count({
-        where: {
-            eno: eno,
-            jpadelete: false
-        }
-    })
+    return models.JobPostingApplication.count({
+        include: [
+            {
+                model: models.JobPostings,
+                where: { eno: eno },
+                required: true // INNER JOIN
+            }
+        ]
+    });
 }
 
 export {

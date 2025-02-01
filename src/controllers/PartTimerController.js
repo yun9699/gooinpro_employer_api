@@ -63,6 +63,8 @@ const getApplicantList = async (req, res) => {
     const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
     const totalCount = await getJobApplicationsCountService(eno);
 
+    console.log(dtoList);
+
     const returnDTO = new PageResponseDTO(dtoList, pageRequestDTO, totalCount);
 
     res.status(200).json({
