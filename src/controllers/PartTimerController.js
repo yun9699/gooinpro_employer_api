@@ -1,4 +1,5 @@
 import {
+    getApplicantReadService,
     getJobApplicationsCountService,
     getJobApplicationsListService,
     getMyPartTimerCountService,
@@ -73,4 +74,20 @@ const getApplicantList = async (req, res) => {
     })
 }
 
-export { getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList }
+//지원자 상세보기
+const getApplicantOne = async (req, res) => {
+
+    const { jpano, pno } = req.params;
+
+    const applicant = await getApplicantReadService(jpano, pno);
+
+    res.status(200).json({
+        status: 'success',
+        data: applicant,
+    })
+}
+
+export {
+    getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList,
+    getApplicantOne
+}

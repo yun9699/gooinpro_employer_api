@@ -5,6 +5,7 @@ import {sequelize} from "../config/MariaDB.js";
 import {col, fn, literal, QueryTypes} from "sequelize";
 import PartTimerWorkStatusDTO from "../dto/partTimerdto/PartTimerWorkStatusDTO.js";
 import ApplicantListDTO from "../dto/partTimerdto/ApplicantListDTO.js";
+import ApplicantReadDTO from "../dto/partTimerdto/ApplicantReadDTO.js";
 
 // 내 근로자 리스트 출력
 const getMyPartTimerListService = async (eno, page, size) => {
@@ -167,7 +168,41 @@ const getJobApplicationsCountService = async (eno) => {
     });
 }
 
+//지원자 상세보기
+const getApplicantReadService = async (jpano, pno) => {
+
+    const result = await sequelize.query(
+        `
+            select
+                pi.pifilename, p.pname, p.pgender, p.pbirth,
+                jpa.jpahourlyRate, jpa.jpacontent
+            from
+                tbl_partTimer p
+                join tbl_jobPostingApplication jpa on p.pno = jpa.pno
+                left join tbl_partTimerImage pi on p.pno = pi.pno
+            where
+                p.pno = :pno and jpa.jpano = :jpano
+    `,
+        {
+            type: QueryTypes.SELECT,
+            replacements: { jpano, pno}
+        }
+    )
+
+    const applicant = result[0];
+
+    return new ApplicantReadDTO(
+
+        applicant.pifilename,
+        applicant.pname,
+        applicant.pgender,
+        applicant.pbirth,
+        applicant.jpahourlyRate,
+        applicant.jpacontent
+    )
+}
+
 export {
     getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService,
-    getJobApplicationsListService, getJobApplicationsCountService
+    getJobApplicationsListService, getJobApplicationsCountService, getApplicantReadService
 };
