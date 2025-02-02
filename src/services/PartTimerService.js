@@ -6,6 +6,7 @@ import {col, fn, literal, QueryTypes} from "sequelize";
 import PartTimerWorkStatusDTO from "../dto/partTimerdto/PartTimerWorkStatusDTO.js";
 import ApplicantListDTO from "../dto/partTimerdto/ApplicantListDTO.js";
 import ApplicantReadDTO from "../dto/partTimerdto/ApplicantReadDTO.js";
+import PartTimerWorkHistoryDTO from "../dto/partTimerdto/PartTimerWorkHistoryDTO.js";
 
 // 내 근로자 리스트 출력
 const getMyPartTimerListService = async (eno, page, size) => {
@@ -202,7 +203,52 @@ const getApplicantReadService = async (jpano, pno) => {
     )
 }
 
+//근로자 이력 리스트
+const getPartTimerWorkHistoryListService = async (pno, page, size) => {
+
+    const offset = page - 1;
+
+    const result = await sequelize.query(
+        `
+        select
+            jp.jpname, pjm.jmstartDate, pjm.jmendDate
+        from
+            tbl_jobPostings jp
+            join (
+                select
+                    jm.jpno, jm.jmstartDate, jm.jmendDate
+                from
+                    tbl_partTimer p
+                    join tbl_jobMatchings jm on p.pno = jm.pno
+                where
+                    p.pno = :pno
+            ) pjm on jp.jpno = pjm.jpno
+        order by
+            pjm.jmstartDate desc
+        limit
+            :offset, :limit
+        `,
+        {
+            type: QueryTypes.SELECT,
+            replacements: { pno, offset, limit: Number(size) }
+        }
+    )
+
+    const workHistory = result.map((row) => {
+
+        const workPeriod = row.jmendDate
+            ? Math.ceil((new Date(row.jmendDate) - new Date(row.jmstartDate)) / (1000 * 60 * 60 * 24))
+            : null;
+
+        return new PartTimerWorkHistoryDTO(row.jpname, row.jmstartDate, row.jmendDate, workPeriod);
+    });
+
+    return workHistory;
+
+}
+
 export {
     getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService,
-    getJobApplicationsListService, getJobApplicationsCountService, getApplicantReadService
+    getJobApplicationsListService, getJobApplicationsCountService, getApplicantReadService,
+    getPartTimerWorkHistoryListService
 };

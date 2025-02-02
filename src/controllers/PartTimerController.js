@@ -4,7 +4,7 @@ import {
     getJobApplicationsListService,
     getMyPartTimerCountService,
     getMyPartTimerListService,
-    getPartTimerOneService, getPartTimerWorkStatusService
+    getPartTimerOneService, getPartTimerWorkHistoryListService, getPartTimerWorkStatusService
 } from "../services/PartTimerService.js";
 import PageRequestDTO from "../dto/common/PageRequestDTO.js";
 import PageResponseDTO from "../dto/common/PageResponseDTO.js";
@@ -87,7 +87,20 @@ const getApplicantOne = async (req, res) => {
     })
 }
 
+//근로자 경력 리스트 get
+const getPartTimerWorkHistory = async (req, res) => {
+
+    const { pno } = req.params;
+
+    const workHistory = await getPartTimerWorkHistoryListService(pno, req.query.page, req.query.size);
+
+    res.status(200).json({
+        status: 'success',
+        data: workHistory
+    })
+}
+
 export {
     getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList,
-    getApplicantOne
+    getApplicantOne, getPartTimerWorkHistory
 }
