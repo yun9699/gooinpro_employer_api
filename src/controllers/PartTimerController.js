@@ -13,8 +13,9 @@ import PageResponseDTO from "../dto/common/PageResponseDTO.js";
 const getMyPartTimerList = async (req, res) => {
 
     const { eno } = req.params;
+    const size = req.query.size ? req.query.size : 10
 
-    const dtoList = await getMyPartTimerListService(eno, req.query.page, req.query.size);
+    const dtoList = await getMyPartTimerListService(eno, req.query.page, size);
     const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
     const totalCount = await getMyPartTimerCountService(eno);
 
@@ -59,8 +60,9 @@ const getPartTimerWorkStatus = async (req, res) => {
 const getApplicantList = async (req, res) => {
 
     const { eno } = req.params;
+    const size = req.query.size ? req.query.size : 10
 
-    const dtoList = await getJobApplicationsListService(eno, req.query.page, req.query.size);
+    const dtoList = await getJobApplicationsListService(eno, req.query.page, size);
     const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
     const totalCount = await getJobApplicationsCountService(eno);
 
@@ -91,8 +93,9 @@ const getApplicantOne = async (req, res) => {
 const getPartTimerWorkHistory = async (req, res) => {
 
     const { pno } = req.params;
+    const size = req.query.size ? req.query.size : 10
 
-    const workHistory = await getPartTimerWorkHistoryListService(pno, req.query.page, req.query.size);
+    const workHistory = await getPartTimerWorkHistoryListService(pno, req.query.page, size);
 
     res.status(200).json({
         status: 'success',
