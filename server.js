@@ -15,6 +15,7 @@ import EmployerLoginRoutes from "./src/routes/EmployerLoginRoutes.js";
 import EmployerRoutes from "./src/routes/EmployerRoutes.js";
 import JWTNotFilter from "./src/security/filter/JWTNotFilter.js";
 import PartTimerRoutes from "./src/routes/PartTimerRoutes.js";
+import JobPostingsRoutes from './src/routes/JobPostingsRoutes.js';
 
 // 환경 변수 로드
 dotenv.config();
@@ -29,6 +30,7 @@ const server = http.createServer(app);
 // WebSocket 서버 설정
 const wss = configureWebSocket(server);  // WebSocket 서버 설정 호출
 
+
 // 서버 설정
 const PORT = 3000;
 
@@ -36,6 +38,7 @@ const PORT = 3000;
 const excludedPaths = ['/employer/api/v1/login'];
 
 // 미들웨어
+app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // JSON 형식 요청 본문 처리
 app.use(express.json());    // Express JSON 처리
 app.use(corsConfig);        // CORS 설정
@@ -49,6 +52,7 @@ app.use('/employer/api/v1/chatmessage', ChatRoutes(wss)); // WebSocket 서버 �
 app.use('/employer/api/v1/chatroom', chatRoomRoutes);
 app.use('/api/map', mapRoutes);
 app.use('/employer/api/v1/partTimer', PartTimerRoutes);
+app.use('/employer/api/v1/jobposting', JobPostingsRoutes);
 
 // 서버 시작
 server.listen(PORT, () => {
