@@ -53,9 +53,11 @@ PartTimerDocumentImage.belongsTo(PartTimer, { foreignKey: 'pno' });
 
 //WorkPlace
 WorkPlace.belongsTo(Employer, { foreignKey: 'eno' });
+WorkPlace.hasMany(JobPostings, { foreignKey: 'wpno' });
 
 // JobPostings
 JobPostings.hasMany(JobMatchings, { foreignKey: 'jpno' });
+JobPostings.belongsTo(WorkPlace, { foreignKey: 'wpno' });
 JobPostings.hasMany(JobPostingApplication, { foreignKey: 'jpno' });
 JobPostings.belongsTo(Employer, { foreignKey: 'eno' });
 

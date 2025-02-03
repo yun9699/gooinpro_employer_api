@@ -12,6 +12,10 @@ const JobPostings = sequelize.define('JobPostings', {
         type: DataTypes.BIGINT,
         allowNull: false
     },
+    wpno: {
+        type: DataTypes.BIGINT,
+        allowNull: true
+    },
     jpname: {
         type: DataTypes.STRING(255),
         allowNull: false
