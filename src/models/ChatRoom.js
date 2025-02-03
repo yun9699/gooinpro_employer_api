@@ -14,17 +14,17 @@ const Chatroom = sequelize.define('Chatroom', {
     },
     pno: { // fk 근로자
         type: DataTypes.BIGINT,
-        allowNull: false,
+        allowNull: true,
         foreignKey: true,
     },
     admno: { // fk 관리자
         type: DataTypes.BIGINT,
-        allowNull: false,
+        allowNull: true,
         foreignKey: true,
     },
     eno: {
         type: DataTypes.BIGINT,
-        allowNull: false,
+        allowNull: true,
         foreignKey: true,
     }
 }, {
