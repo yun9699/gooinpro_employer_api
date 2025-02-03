@@ -16,6 +16,7 @@ import EmployerLoginRoutes from "./src/routes/EmployerLoginRoutes.js";
 import EmployerRoutes from "./src/routes/EmployerRoutes.js";
 import JWTNotFilter from "./src/security/filter/JWTNotFilter.js";
 import PartTimerRoutes from "./src/routes/PartTimerRoutes.js";
+import JobPostingsRoutes from './src/routes/JobPostingsRoutes.js';
 
 // 환경 변수 로드
 dotenv.config();
@@ -50,6 +51,7 @@ app.use('/employer/api/v1/chatmessage', ChatRoutes(io));
 app.use('/employer/api/v1/chatroom', chatRoomRoutes);
 app.use('/api/map', mapRoutes);
 app.use('/employer/api/v1/partTimer', PartTimerRoutes);
+app.use('/employer/api/v1/jobposting', JobPostingsRoutes);
 
 // 서버 시작
 server.listen(PORT, () => {
