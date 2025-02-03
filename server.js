@@ -28,6 +28,7 @@ const app = express();
 const server = http.createServer(app);
 const io = configureSocket(server); // WebSocket 설정
 
+
 // 서버 설정
 const PORT = 3000;
 
@@ -35,6 +36,7 @@ const PORT = 3000;
 const excludedPaths = ['/employer/api/v1/login'];
 
 // 미들웨어
+app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // JSON 형식 요청 본문 처리
 app.use(express.json());    // Express JSON 처리
 app.use(corsConfig);        // CORS 설정

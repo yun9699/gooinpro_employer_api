@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import EmployerDTO from "../dto/employerdto/EmployerDTO.js";
 import EmployerRegisterDTO from "../dto/employerdto/EmployerRegisterDTO.js";
 import EmployerReadDTO from "../dto/employerdto/EmployerReadDTO.js";
+import EmployerEditDTO from "../dto/employerdto/EmployerEditDTO.js";
 
 const authKakao = async (accessToken) => {
     console.log("-------------authKakaoService-------------");
@@ -31,6 +32,21 @@ const authGoogle = async (accessToken) => {
     console.log("email: " + email);
 
     return await returnMember(email);
+}
+
+const authNaver = async (accessToken) => {
+    console.log("-------authNaverService-------------");
+
+    console.log("22222222222222")
+
+    const { email } = await getEmailFromNaverAccessToken(accessToken);
+
+    console.log("55555555555555")
+
+    console.log("email: " + email);
+
+    return await returnMember(email);
+
 }
 
 const returnMember = async (eemail) => {
@@ -122,6 +138,49 @@ const getEmailFromGoogleAccessToken = async (accessToken) => {
     return { email: GoogleAccount };
 }
 
+const getEmailFromNaverAccessToken = async (accessToken) => {
+
+    console.log("3333333333333");
+
+    console.log(accessToken);
+
+    const NaverGetUserURL = 'https://openapi.naver.com/v1/nid/me';
+
+    const response = await axios.get(NaverGetUserURL, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    })
+
+    console.log(response.data.response.email);
+
+    const NaverAccount = response.data.response.email;
+
+    console.log("444444444444")
+
+    return { email: NaverAccount };
+}
+
+const useAuthTokenGetNaverAccessToken = async (params) => {
+
+
+    const header = {
+        headers: {
+            "Content-Type":  "application/x-www-form-urlencoded"
+        }
+    };
+
+    const access_token_url = `https://nid.naver.com/oauth2.0/token`;
+
+    const res = await axios.post(access_token_url, params, header);
+
+    console.log(res.data.access_token);
+
+    return res.data.access_token;
+
+
+}
+
 const registerEmployerService = async (eno, EmployerRegisterDTO) => {
     console.log("Received EmployerRegisterDTO:", EmployerRegisterDTO); // DTO 확인
 
@@ -168,4 +227,31 @@ const ReadEmployer = async (eno) => {
 
 
 }
-export { authKakao, authGoogle, returnMember, getEmailFromKakaoAccessToken, registerEmployerService, ReadEmployer };
+
+const EditEmployer = async (eno, updateData) => {
+    console.log("Employer Edit:", eno);
+
+    const user = await Employer.update(updateData,{
+        where: {
+            eno,
+            edelete: false
+        }
+    })
+
+    const updatedEmployer = await Employer.findOne({
+        where: {
+            eno,
+            edelete: false
+        }
+    })
+
+    console.log(user);
+
+    return new EmployerEditDTO(
+        updatedEmployer.ename,
+        updatedEmployer.ebirth
+    )
+}
+
+
+export { authKakao, authGoogle, authNaver, returnMember, registerEmployerService, ReadEmployer, useAuthTokenGetNaverAccessToken, EditEmployer };
