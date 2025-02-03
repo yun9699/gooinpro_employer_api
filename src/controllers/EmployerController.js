@@ -1,4 +1,11 @@
-import {authGoogle, authKakao, ReadEmployer, registerEmployerService} from "../services/EmployerService.js";
+import {
+    authGoogle,
+    authKakao,
+    authNaver, EditEmployer,
+    ReadEmployer,
+    registerEmployerService,
+    useAuthTokenGetNaverAccessToken
+} from "../services/EmployerService.js";
 import TokenResponseDTO from "../dto/employerdto/TokenResponseDTO.js";
 import JWTUtil from "../security/util/JWTUtil.js";
 
@@ -47,6 +54,44 @@ const GoogleLogin = async (req, res) => {
         data: tokenResponseDTO,
     })
 
+}
+
+const NaverLogin = async (req, res) => {
+
+    console.log("1111111111111111")
+
+    const { accessToken } = req.query;
+    console.log(accessToken);
+
+    const EmployerDTO = await authNaver(accessToken);
+
+    console.log("777777777777")
+
+    const tokenResponseDTO = await generateTokenResponseDTO(EmployerDTO);
+
+    console.log("1010101010101010")
+
+    res.status(200).json({
+        status: 'success',
+        data: tokenResponseDTO,
+    })
+
+}
+
+const NaverGetAuthToken = async (req, res) => {
+
+    const params  = req.body;
+
+    const access_token = await useAuthTokenGetNaverAccessToken(params)
+
+    console.log("----=-=-=-=-=-=-=-=-=-=------")
+
+    console.log(access_token)
+
+    res.status(200).json({
+        status: 'success',
+        data: access_token
+    })
 }
 
 const registerEmployer = async (req, res) => {
@@ -109,67 +154,21 @@ const EmployerRead = async (req, res) => {
 
 }
 
-// const refreshToken = (req, res) => {
-//
-//     const accessToken = req.headers.authorization;
-//
-//     const {refreshToken} = req.query;
-//
-//     if(accessToken === null || refreshToken === null) {
-//         throw new Error("accessToken is required");
-//     }
-//
-//     if(!accessToken.startsWith("Bearer ")) {
-//         throw new Error("accessToken is required")
-//     }
-//
-//     const accessTokenStr = accessToken.substring("Bearer ".length);
-//
-//     try {
-//
-//         const payload = JWTUtil.validateToken(accessTokenStr);
-//         const eemail = payload.eemail;
-//
-//         return res.status(200).json({
-//             accessToken: accessTokenStr,
-//             refreshToken,
-//             eemail,
-//         })
-//
-//     }catch(accessError) {
-//         if (accessError.name === "TokenExpiredError") {
-//             try {
-//                 const refreshpayload = JWTUtil.validateToken(refreshToken);
-//                 const eemail = refreshpayload.eemail;
-//
-//                 let newAccessToken = null;
-//                 let newRefreshToken = null;
-//
-//                 if(true) {
-//                     const claimMap = { eemail }
-//                     newAccessToken = JWTUtil.createToken(claimMap, 1);
-//                     newRefreshToken = JWTUtil.createToken(claimMap, 1000);
-//                 }
-//                 return res.status(200).json({
-//                     accessToken: newAccessToken,
-//                     refreshToken: newRefreshToken,
-//                     eemail,
-//                 })
-//             } catch (refreshError) {
-//                 if(refreshError.name === "TokenExpiredError") {
-//                     return res.status(401).json({
-//                         error: "Require sign-in"
-//                     })
-//                 }
-//                 return res.status(400).json({error: "Invalid refresh token"})
-//             }
-//         }
-//         return res.status(400).json({
-//             error: "Invalid refresh token"
-//         })
-//     }
-//
-// }
+const EmployerEdit = async (req, res) => {
+
+    console.log("EmployerEdit")
+
+    const { eno } = req.params;
+    const updateData = req.body;
+
+    const EmployerEditDTO = await EditEmployer(eno, updateData);
+
+    res.status(200).json({
+        status: 'success',
+        data: EmployerEditDTO,
+    })
+}
+
 
 const refreshToken = (req, res) => {
 
@@ -209,4 +208,4 @@ const refreshToken = (req, res) => {
         });
     }
 }
-export { kakaoLogin, GoogleLogin, registerEmployer, EmployerRead, refreshToken }
+export { kakaoLogin, GoogleLogin, NaverLogin, NaverGetAuthToken, registerEmployer, EmployerRead, EmployerEdit, refreshToken, }
