@@ -28,6 +28,7 @@ Employer.hasMany(WorkLogs, { foreignKey: 'eno' });
 Employer.hasMany(Review, { foreignKey: 'eno' });
 Employer.hasMany(WorkPlace, { foreignKey: 'eno' });
 Employer.hasMany(Complaints, { foreignKey: 'eno' });
+Employer.hasMany(JobMatchings, { foreignKey: 'eno' });
 
 //PartTImer
 PartTimer.hasMany(WorkLogs, { foreignKey: 'pno' });
@@ -36,6 +37,7 @@ PartTimer.hasMany(PartTimerDocumentImage, { foreignKey: 'pno' });
 PartTimer.hasMany(Complaints, { foreignKey: 'pno' });
 PartTimer.hasMany(PartTimerImage, { foreignKey: 'pno' });
 PartTimer.hasMany(JobMatchings, { foreignKey: 'pno' });
+PartTimer.hasMany(JobPostingApplication, { foreignKey: 'pno' });
 
 
 //WorkLogs
@@ -53,16 +55,18 @@ PartTimerDocumentImage.belongsTo(PartTimer, { foreignKey: 'pno' });
 WorkPlace.belongsTo(Employer, { foreignKey: 'eno' });
 
 // JobPostings
-JobPostings.belongsTo(Employer, { foreignKey: 'eno' });
 JobPostings.hasMany(JobMatchings, { foreignKey: 'jpno' });
+JobPostings.hasMany(JobPostingApplication, { foreignKey: 'jpno' });
+JobPostings.belongsTo(Employer, { foreignKey: 'eno' });
 
 // JobMatchings
 JobMatchings.belongsTo(PartTimer, { foreignKey: 'pno' });
 JobMatchings.belongsTo(Employer, { foreignKey: 'eno' });
+JobMatchings.belongsTo(JobPostings, { foreignKey: 'jpno' });
 
 // JobPostingApplication
 JobPostingApplication.belongsTo(JobPostings, { foreignKey: 'jpno' });
-JobPostingApplication.belongsTo(PartTimer, { foreignKey: 'ptno' });
+JobPostingApplication.belongsTo(PartTimer, { foreignKey: 'pno' });
 
 // JobPostingImage
 JobPostingImage.belongsTo(JobPostings, { foreignKey: 'jpno' });
