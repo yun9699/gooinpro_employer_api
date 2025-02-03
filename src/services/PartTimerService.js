@@ -130,7 +130,7 @@ const getJobApplicationsListService = async (eno, page, size) => {
     const result = await sequelize.query(
         `
             select
-                jpa.pno, pi.pifilename, p.pname, jp.jpname, jpa.jpahourlyRate
+                jpa.pno, pi.pifilename, p.pname, jp.jpname, jpa.jpano, jpa.jpahourlyRate
             from
                 tbl_jobPostingApplication jpa
                 left join tbl_jobPostings jp on jpa.jpno = jp.jpno
@@ -151,7 +151,7 @@ const getJobApplicationsListService = async (eno, page, size) => {
 
     return result.map(
         (row) =>
-            new ApplicantListDTO(row.pno, row.pifilename, row.pname, row.jpname, row.jpahourlyRate)
+            new ApplicantListDTO(row.pno, row.pifilename, row.pname, row.jpname, row.jpano, row.jpahourlyRate)
     )
 }
 
@@ -234,7 +234,7 @@ const getPartTimerWorkHistoryListService = async (pno, page, size) => {
         }
     )
 
-    const workHistory = result.map((row) => {
+    return result.map((row) => {
 
         const workPeriod = row.jmendDate
             ? Math.ceil((new Date(row.jmendDate) - new Date(row.jmstartDate)) / (1000 * 60 * 60 * 24))
@@ -242,8 +242,6 @@ const getPartTimerWorkHistoryListService = async (pno, page, size) => {
 
         return new PartTimerWorkHistoryDTO(row.jpname, row.jmstartDate, row.jmendDate, workPeriod);
     });
-
-    return workHistory;
 
 }
 
