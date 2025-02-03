@@ -32,10 +32,10 @@ export const getChatPartRoom = async (req, res) => {
 
 // 채팅방 삭제
 export const deleteChat = async (req, res) => {
-    const { erno } = req.params;
+    const { rno } = req.params;
 
     try {
-        const message = await deleteChatRoom(erno); // 채팅방 삭제
+        const message = await deleteChatRoom(rno); // 채팅방 삭제
         res.status(200).json({ message }); // 성공 메시지 반환
     } catch (error) {
         res.status(400).json({ error: error.message }); // 에러 처리

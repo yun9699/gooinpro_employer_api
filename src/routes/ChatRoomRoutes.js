@@ -12,6 +12,6 @@ router.get('/get/admin/:admno', getChatRoom);
 router.get('/get/part/:pno', getChatPartRoom);
 
 // 채팅방 번호(erno)를 기반으로 채팅방 삭제
-router.delete('/delete/all/:erno', deleteChat);
+router.delete('/delete/all/:rno', deleteChat);
 
 export default router;
