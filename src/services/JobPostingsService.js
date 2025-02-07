@@ -1,23 +1,30 @@
 import models from "../models/index.js";
+import mapService from "../services/mapService.js";
 
 // 구인공고 등록
 const registerJobPostingService = async (registerDTO) => {
     try {
         console.log("받은 DTO 데이터:", registerDTO);
 
-        // 1. WorkPlace 레코드 생성 – 근무지 정보를 DB에 저장하고 새 레코드의 wpno 값을 반환받음
+        // 1. 주소를 위도/경도로 변환
+        const coords = await mapService.getGeocode(registerDTO.wroadAddress);  // mapService의 getGeocode 사용
+
+        // 2. WorkPlace 레코드 생성 - 위도/경도 포함하여 저장
         const newWorkPlace = await models.WorkPlace.create({
             eno: registerDTO.eno,
             wroadAddress: registerDTO.wroadAddress,
-            wdetailAddress: registerDTO.wdetailAddress
+            wdetailAddress: registerDTO.wdetailAddress,
+            wlati: coords.lat.toString(),  // 위도 저장
+            wlong: coords.lng.toString(),  // 경도 저장
+            wdelete: false
         });
 
         console.log("생성된 WorkPlace:", newWorkPlace);
 
-        // 2. 구인공고 생성 – 반환받은 WorkPlace의 wpno 값을 외래키로 할당하여 저장
+        // 3. 구인공고 생성
         const newJobPosting = await models.JobPostings.create({
             eno: registerDTO.eno,
-            wpno: newWorkPlace.wpno,  // 이 부분이 추가됨
+            wpno: newWorkPlace.wpno,
             jpname: registerDTO.jpname,
             jpcontent: registerDTO.jpcontent,
             jpvacancies: registerDTO.jpvacancies,
@@ -40,6 +47,29 @@ const registerJobPostingService = async (registerDTO) => {
 // 구인공고 수정
 const editJobPostingService = async (editDTO) => {
     try {
+        // 1. 주소를 위도/경도로 변환 (주소가 변경되었을 때만 변환)
+        let coords = null;
+        if (editDTO.wroadAddress) {
+            coords = await mapService.getGeocode(editDTO.wroadAddress);  // mapService의 getGeocode 사용
+        }
+
+        // 2. WorkPlace 레코드 수정 (주소 변경 시 위도/경도도 갱신)
+        const updatedWorkPlace = await models.WorkPlace.update(
+            {
+                wroadAddress: editDTO.wroadAddress,
+                wdetailAddress: editDTO.wdetailAddress,
+                wlati: coords ? coords.lat.toString() : undefined,  // 위도 갱신
+                wlong: coords ? coords.lng.toString() : undefined,  // 경도 갱신
+                wdelete: false
+            },
+            { where: { wpno: editDTO.wpno } }
+        );
+
+        if (updatedWorkPlace[0] === 0) {
+            throw new Error("수정할 WorkPlace를 찾을 수 없습니다.");
+        }
+
+        // 3. 구인공고 수정
         const updatedJobPosting = await models.JobPostings.update(
             {
                 jpname: editDTO.jpname,
@@ -121,7 +151,6 @@ const listJobPostingsService = async (eno) => {
         throw new Error("구인공고 리스트 조회 중 오류가 발생했습니다.");
     }
 };
-
 
 export {
     registerJobPostingService,
