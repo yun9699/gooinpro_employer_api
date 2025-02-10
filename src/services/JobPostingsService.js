@@ -7,15 +7,23 @@ const registerJobPostingService = async (registerDTO) => {
         console.log("받은 DTO 데이터:", registerDTO);
 
         // 1. 주소를 위도/경도로 변환
-        const coords = await mapService.getGeocode(registerDTO.wroadAddress);  // mapService의 getGeocode 사용
+        const coords = await mapService.getGeocode(registerDTO.wroadAddress);
+        console.log("Geocode 응답:", coords); // 응답 구조 확인
 
-        // 2. WorkPlace 레코드 생성 - 위도/경도 포함하여 저장
+        if (!coords.addresses || coords.addresses.length === 0) {
+            throw new Error("주소에 대한 좌표를 찾을 수 없습니다.");
+        }
+
+        const location = coords.addresses[0];
+        console.log("위치 정보:", location); // location 객체 확인
+
+        // 2. WorkPlace 레코드 생성
         const newWorkPlace = await models.WorkPlace.create({
             eno: registerDTO.eno,
             wroadAddress: registerDTO.wroadAddress,
             wdetailAddress: registerDTO.wdetailAddress,
-            wlati: coords.lat.toString(),  // 위도 저장
-            wlong: coords.lng.toString(),  // 경도 저장
+            wlati: location.y.toString(),
+            wlong: location.x.toString(),
             wdelete: false
         });
 
@@ -47,19 +55,24 @@ const registerJobPostingService = async (registerDTO) => {
 // 구인공고 수정
 const editJobPostingService = async (editDTO) => {
     try {
-        // 1. 주소를 위도/경도로 변환 (주소가 변경되었을 때만 변환)
-        let coords = null;
-        if (editDTO.wroadAddress) {
-            coords = await mapService.getGeocode(editDTO.wroadAddress);  // mapService의 getGeocode 사용
+        // 1. 주소를 위도/경도로 변환
+        const coords = await mapService.getGeocode(editDTO.wroadAddress);
+        console.log("Geocode 응답:", coords); // 응답 구조 확인
+
+        if (!coords.addresses || coords.addresses.length === 0) {
+            throw new Error("주소에 대한 좌표를 찾을 수 없습니다.");
         }
 
-        // 2. WorkPlace 레코드 수정 (주소 변경 시 위도/경도도 갱신)
+        const location = coords.addresses[0];
+        console.log("위치 정보:", location);
+
+        // 2. WorkPlace 레코드 수정
         const updatedWorkPlace = await models.WorkPlace.update(
             {
                 wroadAddress: editDTO.wroadAddress,
                 wdetailAddress: editDTO.wdetailAddress,
-                wlati: coords ? coords.lat.toString() : undefined,  // 위도 갱신
-                wlong: coords ? coords.lng.toString() : undefined,  // 경도 갱신
+                wlati: location.y.toString(),  // y가 위도
+                wlong: location.x.toString(),  // x가 경도
                 wdelete: false
             },
             { where: { wpno: editDTO.wpno } }
@@ -96,6 +109,7 @@ const editJobPostingService = async (editDTO) => {
     }
 };
 
+
 // 구인공고 삭제
 const deleteJobPostingService = async (jpno, eno) => {
     try {
@@ -120,13 +134,25 @@ const getOneJobPostingService = async (jpno, eno) => {
     try {
         const jobPosting = await models.JobPostings.findOne({
             where: { jpno, eno, jpdelete: false },
+            include: [{
+                model: models.WorkPlace,
+                attributes: ['wroadAddress', 'wdetailAddress', 'wlati', 'wlong', 'wpno']
+            }]
         });
 
         if (!jobPosting) {
             throw new Error("조회할 공고를 찾을 수 없습니다.");
         }
 
-        return jobPosting;
+        // WorkPlace 정보를 포함하여 반환
+        return {
+            ...jobPosting.dataValues,
+            wroadAddress: jobPosting.WorkPlace.wroadAddress,
+            wdetailAddress: jobPosting.WorkPlace.wdetailAddress,
+            wpno: jobPosting.WorkPlace.wpno,
+            wlati: jobPosting.WorkPlace.wlati,
+            wlong: jobPosting.WorkPlace.wlong
+        };
     } catch (error) {
         console.error("구인공고 단일 조회 서비스 실패:", error);
         throw new Error("구인공고 단일 조회 중 오류가 발생했습니다.");
