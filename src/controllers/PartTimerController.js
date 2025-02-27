@@ -4,7 +4,10 @@ import {
     getJobApplicationsListService,
     getMyPartTimerCountService,
     getMyPartTimerListService,
-    getPartTimerOneService, getPartTimerWorkHistoryListService, getPartTimerWorkStatusService
+    getPartTimerOneService,
+    getPartTimerTotalPayService,
+    getPartTimerWorkHistoryListService,
+    getPartTimerWorkStatusService
 } from "../services/PartTimerService.js";
 import PageRequestDTO from "../dto/common/PageRequestDTO.js";
 import PageResponseDTO from "../dto/common/PageResponseDTO.js";
@@ -103,7 +106,20 @@ const getPartTimerWorkHistory = async (req, res) => {
     })
 }
 
+//employer 한명 지출한 총 급여 계산
+const getPartTimerTotalPay = async (req, res) => {
+
+    const { eno } = req.params;
+
+    const totalPay = await getPartTimerTotalPayService(eno);
+
+    res.status(200).json({
+        status: 'success',
+        data: totalPay
+    })
+}
+
 export {
     getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList,
-    getApplicantOne, getPartTimerWorkHistory
+    getApplicantOne, getPartTimerWorkHistory, getPartTimerTotalPay
 }

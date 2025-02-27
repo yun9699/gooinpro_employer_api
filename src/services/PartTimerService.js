@@ -186,7 +186,7 @@ const getApplicantReadService = async (jpano, pno) => {
     `,
         {
             type: QueryTypes.SELECT,
-            replacements: { jpano, pno}
+            replacements: { jpano, pno }
         }
     )
 
@@ -242,11 +242,34 @@ const getPartTimerWorkHistoryListService = async (pno, page, size) => {
 
         return new PartTimerWorkHistoryDTO(row.jpname, row.jmstartDate, row.jmendDate, workPeriod);
     });
+}
 
+//employer 한명 지출한 총 급여 계산
+const getPartTimerTotalPayService = async (eno) => {
+
+    const result = await sequelize.query(
+        `
+        select
+            SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS data
+        FROM
+            tbl_jobMatchings jm
+            LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
+        WHERE
+            jm.eno = :eno
+            AND wlstartTime IS NOT NULL
+            AND wlendTime IS NOT NULL
+        `,
+        {
+            type: QueryTypes.SELECT,
+            replacements: { eno }
+        }
+    )
+
+    return result[0];
 }
 
 export {
     getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService,
     getJobApplicationsListService, getJobApplicationsCountService, getApplicantReadService,
-    getPartTimerWorkHistoryListService
+    getPartTimerWorkHistoryListService, getPartTimerTotalPayService
 };

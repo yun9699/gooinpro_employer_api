@@ -2,7 +2,7 @@ import express from "express";
 import {
     getApplicantList, getApplicantOne,
     getMyPartTimerList,
-    getPartTimerOne, getPartTimerWorkHistory,
+    getPartTimerOne, getPartTimerTotalPay, getPartTimerWorkHistory,
     getPartTimerWorkStatus
 } from "../controllers/PartTimerController.js";
 
@@ -20,5 +20,6 @@ router.get('/applicant/read/:jpano/:pno', getApplicantOne);
 
 router.get('/workHistory/:pno', getPartTimerWorkHistory);
 
+router.get('/totalPay/:eno', getPartTimerTotalPay);
 
 export default router;
