@@ -7,6 +7,7 @@ import PartTimerWorkStatusDTO from "../dto/partTimerdto/PartTimerWorkStatusDTO.j
 import ApplicantListDTO from "../dto/partTimerdto/ApplicantListDTO.js";
 import ApplicantReadDTO from "../dto/partTimerdto/ApplicantReadDTO.js";
 import PartTimerWorkHistoryDTO from "../dto/partTimerdto/PartTimerWorkHistoryDTO.js";
+import PartTimerWithPayListDTO from "../dto/partTimerdto/PartTimerWithPayListDTO.js";
 
 // 내 근로자 리스트 출력
 const getMyPartTimerListService = async (eno, page, size) => {
@@ -186,7 +187,7 @@ const getApplicantReadService = async (jpano, pno) => {
     `,
         {
             type: QueryTypes.SELECT,
-            replacements: { jpano, pno}
+            replacements: { jpano, pno }
         }
     )
 
@@ -242,11 +243,150 @@ const getPartTimerWorkHistoryListService = async (pno, page, size) => {
 
         return new PartTimerWorkHistoryDTO(row.jpname, row.jmstartDate, row.jmendDate, workPeriod);
     });
+}
 
+//employer 한명 지출한 총 급여 계산
+const getPartTimerTotalPayService = async (eno) => {
+
+    const result = await sequelize.query(
+        `
+        select
+            SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS data
+        FROM
+            tbl_jobMatchings jm
+            LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
+        WHERE
+            jm.eno = :eno
+            AND wlstartTime IS NOT NULL
+            AND wlendTime IS NOT NULL
+        `,
+        {
+            type: QueryTypes.SELECT,
+            replacements: { eno }
+        }
+    )
+
+    return result[0];
+}
+
+//연도, 월 선택 나간 급여 확인
+const getPartTimerPayByYearMonthService = async (eno, month, year) => {
+
+    const result = await sequelize.query(
+        `
+        select
+            SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS sum
+        FROM
+            tbl_jobMatchings jm
+            LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
+        WHERE
+            jm.eno = :eno
+            AND wlstartTime IS NOT NULL
+            AND wlendTime IS NOT NULL
+            AND MONTH(wlstartTime) = :month
+            AND YEAR(wlstartTime) = :year
+        `, {
+            type: QueryTypes.SELECT,
+            replacements: { eno, month, year }
+        }
+    )
+
+    return result[0];
+}
+
+//연도 선택 나간 급여 확인
+const getPartTImerPayByYearService = async (eno, year) => {
+
+    const result = await sequelize.query(
+        `
+        select
+            SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS sum
+        FROM
+            tbl_jobMatchings jm
+            LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
+        WHERE
+            jm.eno = :eno
+            AND wlstartTime IS NOT NULL
+            AND wlendTime IS NOT NULL
+            AND YEAR(wlstartTime) = :year
+        `, {
+            type: QueryTypes.SELECT,
+            replacements: { eno, year }
+        }
+    )
+
+    return result[0];
+}
+
+//근로자 리스트(급여 나옴)
+const getPartTimerListWithPayService = async (eno, year, month, page, size) => {
+
+    const offset = page - 1;
+
+    const result = await sequelize.query(
+        `
+        select
+            p.pno, max(p.pname), jp.jpname, max(jm.jmhourlyRate),
+            SUM(jm.jmhourlyRate * TIMESTAMPDIFF(MINUTE, wl.wlstartTime, wl.wlendTime) / 60) AS sum
+        from
+            tbl_partTimer p
+            left join tbl_jobMatchings jm on p.pno = jm.pno
+            left join tbl_workLogs wl on jm.jmno = wl.jmno
+            left join tbl_jobPostings jp on jm.jpno = jp.jpno
+        where
+            jm.eno = :eno
+            and wl.wlstartTime is not null
+            and wl.wlendTime is not null
+            and month(wl.wlstartTime) = :month
+            and year(wl.wlstartTime) = :year
+        group by
+            p.pno, jp.jpname
+        limit
+            :offset, :limit
+        `, {
+            type: QueryTypes.SELECT,
+            replacements: { eno, month, year, offset, limit: Number(size) }
+        }
+    )
+
+    return result.map(
+        (row) =>
+            new PartTimerWithPayListDTO(row.pno, row.pname, row.jpname, row.jmhourlyRate, row.sum)
+    )
+}
+
+//근로자 리스트(급여) - count
+const getPartTimerListWithPayCountService = async (eno, year, month) => {
+
+    const result = await sequelize.query(
+        `
+        select
+            count(*)
+        from
+            tbl_partTimer p
+            left join tbl_jobMatchings jm on p.pno = jm.pno
+            left join tbl_workLogs wl on jm.jmno = wl.jmno
+            left join tbl_jobPostings jp on jm.jpno = jp.jpno
+        where
+            jm.eno = :eno
+            and wl.wlstartTime is not null
+            and wl.wlendTime is not null
+            and month(wl.wlstartTime) = :month
+            and year(wl.wlstartTime) = :year
+        `, {
+            type: QueryTypes.SELECT,
+            replacements: { eno, month, year }
+        }
+    )
+
+    const data = result[0];
+
+    return data['count(*)'];
 }
 
 export {
     getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService,
     getJobApplicationsListService, getJobApplicationsCountService, getApplicantReadService,
-    getPartTimerWorkHistoryListService
+    getPartTimerWorkHistoryListService, getPartTimerTotalPayService, getPartTimerPayByYearMonthService,
+    getPartTImerPayByYearService, getPartTimerListWithPayService, getPartTimerListWithPayCountService
 };

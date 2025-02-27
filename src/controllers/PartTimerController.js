@@ -3,8 +3,11 @@ import {
     getJobApplicationsCountService,
     getJobApplicationsListService,
     getMyPartTimerCountService,
-    getMyPartTimerListService,
-    getPartTimerOneService, getPartTimerWorkHistoryListService, getPartTimerWorkStatusService
+    getMyPartTimerListService, getPartTimerListWithPayCountService, getPartTimerListWithPayService,
+    getPartTimerOneService, getPartTimerPayByYearMonthService, getPartTImerPayByYearService,
+    getPartTimerTotalPayService,
+    getPartTimerWorkHistoryListService,
+    getPartTimerWorkStatusService
 } from "../services/PartTimerService.js";
 import PageRequestDTO from "../dto/common/PageRequestDTO.js";
 import PageResponseDTO from "../dto/common/PageResponseDTO.js";
@@ -103,7 +106,70 @@ const getPartTimerWorkHistory = async (req, res) => {
     })
 }
 
+//employer 한명 지출한 총 급여 계산
+const getPartTimerTotalPay = async (req, res) => {
+
+    const { eno } = req.params;
+
+    const totalPay = await getPartTimerTotalPayService(eno);
+
+    res.status(200).json({
+        status: 'success',
+        data: totalPay
+    })
+}
+
+//연,월 선택 나간 급여 확인
+const getPartTimerPayByYearMonth = async (req, res) => {
+
+    const { eno } = req.params;
+    const month = req.query.month;
+    const year = req.query.year;
+
+    const pay = await getPartTimerPayByYearMonthService(eno, month, year);
+
+    res.status(200).json({
+        status: 'success',
+        data: pay
+    })
+}
+
+//연도 선택 나간 급여 확인
+const getPartTImerPayByYear = async (req, res) => {
+
+    const { eno } = req.params;
+    const year = req.query.year;
+
+    const pay = await getPartTImerPayByYearService(eno, year);
+
+    res.status(200).json({
+        status: 'success',
+        data: pay
+    })
+}
+
+//근로자 리스트(일한 시간, 급여 나옴)
+const getPartTimerListWithPay = async (req, res) => {
+
+    const { eno } = req.params;
+    const year = req.query.year;
+    const month = req.query.month;
+    const size = req.query.size ? req.query.size : 10
+
+    const dtoList = await getPartTimerListWithPayService(eno, year, month, req.query.page, size);
+    const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
+    const totalCount = await getPartTimerListWithPayCountService(eno, year, month);
+
+    const returnDTO = new PageResponseDTO(dtoList, pageRequestDTO, Number(totalCount));
+
+    res.status(200).json({
+        status: 'success',
+        data: returnDTO
+    })
+}
+
 export {
     getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList,
-    getApplicantOne, getPartTimerWorkHistory
+    getApplicantOne, getPartTimerWorkHistory, getPartTimerTotalPay, getPartTimerPayByYearMonth,
+    getPartTImerPayByYear, getPartTimerListWithPay
 }
