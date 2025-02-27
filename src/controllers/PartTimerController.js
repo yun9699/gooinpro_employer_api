@@ -3,7 +3,7 @@ import {
     getJobApplicationsCountService,
     getJobApplicationsListService,
     getMyPartTimerCountService,
-    getMyPartTimerListService,
+    getMyPartTimerListService, getPartTimerListWithPayCountService, getPartTimerListWithPayService,
     getPartTimerOneService, getPartTimerPayByYearMonthService, getPartTImerPayByYearService,
     getPartTimerTotalPayService,
     getPartTimerWorkHistoryListService,
@@ -148,8 +148,28 @@ const getPartTImerPayByYear = async (req, res) => {
     })
 }
 
+//근로자 리스트(일한 시간, 급여 나옴)
+const getPartTimerListWithPay = async (req, res) => {
+
+    const { eno } = req.params;
+    const year = req.query.year;
+    const month = req.query.month;
+    const size = req.query.size ? req.query.size : 10
+
+    const dtoList = await getPartTimerListWithPayService(eno, year, month, req.query.page, size);
+    const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
+    const totalCount = await getPartTimerListWithPayCountService(eno, year, month);
+
+    const returnDTO = new PageResponseDTO(dtoList, pageRequestDTO, Number(totalCount));
+
+    res.status(200).json({
+        status: 'success',
+        data: returnDTO
+    })
+}
+
 export {
     getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList,
     getApplicantOne, getPartTimerWorkHistory, getPartTimerTotalPay, getPartTimerPayByYearMonth,
-    getPartTImerPayByYear
+    getPartTImerPayByYear, getPartTimerListWithPay
 }
