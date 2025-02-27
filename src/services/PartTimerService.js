@@ -268,8 +268,33 @@ const getPartTimerTotalPayService = async (eno) => {
     return result[0];
 }
 
+//연도, 월 선택 나간 급여 확인
+const getPartTimerPayByYearMonthService = async (eno, month, year) => {
+
+    const result = await sequelize.query(
+        `
+        select
+            SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS sum
+        FROM
+            tbl_jobMatchings jm
+            LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
+        WHERE
+            jm.eno = :eno
+            AND wlstartTime IS NOT NULL
+            AND wlendTime IS NOT NULL
+            AND MONTH(wlstartTime) = :month
+            AND YEAR(wlstartTime) = :year
+        `, {
+            type: QueryTypes.SELECT,
+            replacements: { eno, month, year }
+        }
+    )
+
+    return result[0];
+}
+
 export {
     getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService,
     getJobApplicationsListService, getJobApplicationsCountService, getApplicantReadService,
-    getPartTimerWorkHistoryListService, getPartTimerTotalPayService
+    getPartTimerWorkHistoryListService, getPartTimerTotalPayService, getPartTimerPayByYearMonthService
 };

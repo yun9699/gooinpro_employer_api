@@ -4,7 +4,7 @@ import {
     getJobApplicationsListService,
     getMyPartTimerCountService,
     getMyPartTimerListService,
-    getPartTimerOneService,
+    getPartTimerOneService, getPartTimerPayByYearMonthService,
     getPartTimerTotalPayService,
     getPartTimerWorkHistoryListService,
     getPartTimerWorkStatusService
@@ -119,7 +119,22 @@ const getPartTimerTotalPay = async (req, res) => {
     })
 }
 
+//연,월 선택 나간 급여 확인
+const getPartTimerPayByYearMonth = async (req, res) => {
+
+    const { eno } = req.params;
+    const month = req.query.month;
+    const year = req.query.year;
+
+    const pay = await getPartTimerPayByYearMonthService(eno, month, year);
+
+    res.status(200).json({
+        status: 'success',
+        data: pay
+    })
+}
+
 export {
     getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList,
-    getApplicantOne, getPartTimerWorkHistory, getPartTimerTotalPay
+    getApplicantOne, getPartTimerWorkHistory, getPartTimerTotalPay, getPartTimerPayByYearMonth
 }
