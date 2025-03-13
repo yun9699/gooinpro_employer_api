@@ -82,9 +82,9 @@ const getApplicantList = async (req, res) => {
 //지원자 상세보기
 const getApplicantOne = async (req, res) => {
 
-    const { jpano, pno } = req.params;
+    const { jpano } = req.params;
 
-    const applicant = await getApplicantReadService(jpano, pno);
+    const applicant = await getApplicantReadService(jpano);
 
     res.status(200).json({
         status: 'success',
