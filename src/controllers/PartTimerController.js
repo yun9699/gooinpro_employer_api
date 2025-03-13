@@ -62,12 +62,12 @@ const getPartTimerWorkStatus = async (req, res) => {
 //지원자 리스트 get
 const getApplicantList = async (req, res) => {
 
-    const { jpno, eno } = req.params;
+    const { jpno } = req.params;
     const size = req.query.size ? req.query.size : 10
 
-    const dtoList = await getJobApplicationsListService(jpno, eno, req.query.page, size);
+    const dtoList = await getJobApplicationsListService(jpno, req.query.page, size);
     const pageRequestDTO = new PageRequestDTO(req.query.page, req.query.size);
-    const totalCount = await getJobApplicationsCountService(jpno, eno);
+    const totalCount = await getJobApplicationsCountService(jpno);
 
     console.log(dtoList);
 
