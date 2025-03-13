@@ -124,7 +124,7 @@ const getPartTimerWorkStatusService = async (pno) => {
 }
 
 //내 지원자 리스트 출력
-const getJobApplicationsListService = async (eno, page, size) => {
+const getJobApplicationsListService = async (jpno, eno, page, size) => {
 
     const offset = page - 1;
 
@@ -138,7 +138,7 @@ const getJobApplicationsListService = async (eno, page, size) => {
                 left join tbl_partTimer p on jpa.pno = p.pno
                 left join tbl_partTimerImage pi on jpa.pno = pi.pno
             where
-                jpa.jpadelete = false and jp.eno = :eno
+                jpa.jpadelete = false and jp.eno = :eno and jp.jpno = :jpno
             order by
                 pno
             limit
@@ -146,7 +146,7 @@ const getJobApplicationsListService = async (eno, page, size) => {
             `,
         {
             type: QueryTypes.SELECT,
-            replacements: { eno, offset, limit: Number(size) }
+            replacements: { jpno, eno, offset, limit: Number(size) }
         }
     )
 
@@ -157,13 +157,13 @@ const getJobApplicationsListService = async (eno, page, size) => {
 }
 
 // 내 지원자 수 count
-const getJobApplicationsCountService = async (eno) => {
+const getJobApplicationsCountService = async (jpno, eno) => {
 
     return models.JobPostingApplication.count({
         include: [
             {
                 model: models.JobPostings,
-                where: { eno: eno },
+                where: { eno: eno, jpno: jpno },
                 required: true // INNER JOIN
             }
         ]
