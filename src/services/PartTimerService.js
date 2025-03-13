@@ -131,7 +131,7 @@ const getJobApplicationsListService = async (jpno, page, size) => {
     const result = await sequelize.query(
         `
             select
-                jpa.jpano, pi.pifilename, p.pname, jp.jpname, jpa.jpahourlyRate
+                jpa.jpano, pi.pifilename, p.pname, jp.jpname, jpa.jpahourlyRate, p.pno
             from
                 tbl_jobPostingApplication jpa
                 left join tbl_jobPostings jp on jpa.jpno = jp.jpno
@@ -152,7 +152,7 @@ const getJobApplicationsListService = async (jpno, page, size) => {
 
     return result.map(
         (row) =>
-            new ApplicantListDTO(row.jpano, row.pifilename, row.pname, row.jpname, row.jpahourlyRate)
+            new ApplicantListDTO(row.jpano, row.pifilename, row.pname, row.jpname, row.jpahourlyRate, row.pno)
     )
 }
 
