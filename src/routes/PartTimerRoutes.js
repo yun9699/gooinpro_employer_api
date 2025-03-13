@@ -13,7 +13,7 @@ router.get('/read/:pno', getPartTimerOne);
 
 router.get('/workStatus/:pno', getPartTimerWorkStatus);
 
-router.get('/applicant/list/:eno', getApplicantList);
+router.get('/applicant/list/:jpno/:eno', getApplicantList);
 
 router.get('/applicant/read/:jpano/:pno', getApplicantOne);
 
