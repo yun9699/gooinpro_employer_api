@@ -168,7 +168,7 @@ const getJobApplicationsCountService = async (jpno) => {
 }
 
 //지원자 상세보기
-const getApplicantReadService = async (jpano, pno) => {
+const getApplicantReadService = async (jpano) => {
 
     const result = await sequelize.query(
         `
@@ -180,11 +180,11 @@ const getApplicantReadService = async (jpano, pno) => {
                 join tbl_jobPostingApplication jpa on p.pno = jpa.pno
                 left join tbl_partTimerImage pi on p.pno = pi.pno
             where
-                p.pno = :pno and jpa.jpano = :jpano
+                jpa.jpano = :jpano
     `,
         {
             type: QueryTypes.SELECT,
-            replacements: { jpano, pno }
+            replacements: { jpano }
         }
     )
 

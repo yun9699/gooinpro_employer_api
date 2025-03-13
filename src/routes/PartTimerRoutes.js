@@ -15,7 +15,7 @@ router.get('/workStatus/:pno', getPartTimerWorkStatus);
 
 router.get('/applicant/list/:jpno', getApplicantList);
 
-router.get('/applicant/read/:jpano/:pno', getApplicantOne);
+router.get('/applicant/read/:jpano', getApplicantOne);
 
 router.get('/workHistory/:pno', getPartTimerWorkHistory);
 
