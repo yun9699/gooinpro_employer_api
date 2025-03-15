@@ -1,14 +1,14 @@
 
 class ApplicantListDTO {
 
-    constructor(pno, pifilename, pname, jpname, jpano, jpahourlyRate) {
+    constructor(jpano, pifilename, pname, jpname, jpahourlyRate, pno) {
 
-        this.pno = pno;
+        this.jpano = jpano;
         this.pifilename = pifilename;
         this.pname = pname;
         this.jpname = jpname;
-        this.jpano = jpano;
         this.jpahourlyRate = jpahourlyRate;
+        this.pno = pno;
     }
 }
 
