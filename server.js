@@ -18,6 +18,7 @@ import EmployerRoutes from "./src/routes/EmployerRoutes.js";
 import JWTNotFilter from "./src/security/filter/JWTNotFilter.js";
 import PartTimerRoutes from "./src/routes/PartTimerRoutes.js";
 import JobPostingsRoutes from './src/routes/JobPostingsRoutes.js';
+import CalendarRoutes from "./src/routes/CalendarRoutes.js";
 import jobPostingImageRoutes from './src/routes/JobPostingImageRoutes.js';
 
 // 환경 변수 로드
@@ -68,6 +69,7 @@ app.use('/employer/api/v1/chatroom', chatRoomRoutes);
 app.use('/api/map', mapRoutes);
 app.use('/employer/api/v1/partTimer', PartTimerRoutes);
 app.use('/employer/api/v1/jobposting', JobPostingsRoutes);
+app.use('/employer/api/v1/calendar', CalendarRoutes);
 app.use('/api/jobpostings-images', jobPostingImageRoutes);
 
 // 서버 시작
