@@ -93,7 +93,7 @@ const editJobPostingService = async (editDTO) => {
 
         // 7. 트랜잭션 커밋
         await transaction.commit();
-        return "구인공고 수정 성공";
+        return "구인공고 수정 성공";ss
 
     } catch (error) {
         // 🔥 에러 발생 시 트랜잭션 롤백 및 상세 로그 출력
