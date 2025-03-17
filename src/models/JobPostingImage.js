@@ -25,4 +25,16 @@ const JobPostingImage = sequelize.define('JobPostingImage', {
     timestamps: false
 });
 
+// 관계 설정 추가
+JobPostingImage.associate = (models) => {
+    JobPostingImage.belongsTo(models.JobPosting, {
+        foreignKey: 'jpno',
+        as: 'jobPosting'
+    });
+    JobPostingImage.belongsTo(models.Employer, {
+        foreignKey: 'eno',
+        as: 'employer'
+    });
+};
+
 export default JobPostingImage;

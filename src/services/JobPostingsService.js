@@ -2,7 +2,6 @@ import models from "../models/index.js";
 import mapService from "../services/mapService.js";
 
 // 구인공고 등록
-// 구인공고 등록
 const registerJobPostingService = async (registerDTO) => {
     const transaction = await models.sequelize.transaction({});
     try {
