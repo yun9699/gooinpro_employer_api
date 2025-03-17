@@ -15,6 +15,7 @@ import JobMatchings from './JobMatchings.js';
 import JobPostingApplication from "./JobPostingApplication.js";
 import JobPostingImage from './JobPostingImage.js';
 import Admin from "./Admin.js";
+import { sequelize } from "../config/MariaDB.js";
 
 // 관계 정의
 
@@ -100,6 +101,7 @@ Chatroom.belongsTo(PartTimer, { foreignKey: 'pno' });
 Chatroom.belongsTo(Admin, { foreignKey: 'admno' });
 
 const models = {
+    sequelize,
     Employer,
     PartTimer,
     WorkLogs,

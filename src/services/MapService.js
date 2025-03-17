@@ -4,51 +4,55 @@ import models from '../models/index.js';
 const mapService = {
     getGeocode: async (address) => {
         try {
-            // 1. DB에서 해당 주소의 좌표 조회
+            // 1. DB에서 주소 검색 (소프트 삭제되지 않은 레코드)
             const existingLocation = await models.WorkPlace.findOne({
                 where: {
                     wroadAddress: address,
                     wdelete: false
-                }
+                },
+                attributes: ['wlati', 'wlong'], // 필요한 필드만 선택
+                raw: true // 순수 객체로 반환
             });
 
-            // DB에 있으면 네이버 API 응답 형식과 동일하게 반환
+            // 2. DB에 존재하는 경우: 저장된 좌표 반환
             if (existingLocation && existingLocation.wlati && existingLocation.wlong) {
                 return {
-                    addresses: [{
-                        x: existingLocation.wlong,
-                        y: existingLocation.wlati
-                    }]
+                    lat: parseFloat(existingLocation.wlati),
+                    lng: parseFloat(existingLocation.wlong)
                 };
             }
 
-            // 2. 주소 전처리 ("지하" 제거) -> Kakao 우편번호 서비스 호환성 위해 사용
+            // 3. 주소 전처리 (카카오 우편번호 서비스 호환성)
             const formattedAddress = address.replace('지하 ', '');
+            console.log('[Geocode] 처리된 주소:', formattedAddress);
 
-            // 3. DB에 없는 경우 네이버 API 호출
-            console.log("네이버 API 호출 주소:", formattedAddress);
+            // 4. 네이버 API 호출
             const response = await axios.get('https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode', {
                 headers: {
                     'X-NCP-APIGW-API-KEY-ID': process.env.NCP_CLIENT_ID,
                     'X-NCP-APIGW-API-KEY': process.env.NCP_CLIENT_SECRET,
                     'Accept': 'application/json'
                 },
-                params: {
-                    query: formattedAddress
-                }
+                params: { query: formattedAddress }
             });
 
-            console.log("네이버 API 응답:", response.data);
+            console.log('[Geocode] Naver API 응답:', response.data);
 
-            // 4. 응답 검증
-            if (!response.data.addresses || response.data.addresses.length === 0) {
-                throw new Error('주소에 대한 좌표를 찾을 수 없습니다.');
+            // 5. 응답 검증
+            if (!response.data?.addresses?.length) {
+                throw new Error('유효한 좌표를 찾을 수 없습니다');
             }
 
-            return response.data;
+            // 6. 좌표 추출 및 포맷 통일
+            const { x, y } = response.data.addresses[0];
+            return {
+                lat: parseFloat(y), // 위도
+                lng: parseFloat(x)  // 경도
+            };
+
         } catch (error) {
-            console.error("Geocoding API 에러:", error);
-            throw new Error('Geocoding 실패: ' + error.message);
+            console.error('[Geocode] 오류 발생:', error);
+            throw new Error(`주소 변환 실패: ${error.message}`);
         }
     },
 
@@ -61,13 +65,13 @@ const mapService = {
                     'Accept': 'application/json'
                 },
                 params: {
-                    coords: coords,
+                    coords: `${coords.lng},${coords.lat}`, // 경도,위도 순서
                     output: 'json'
                 }
             });
             return response.data;
         } catch (error) {
-            throw new Error('Reverse Geocoding 실패: ' + error.message);
+            throw new Error(`역방향 변환 실패: ${error.message}`);
         }
     }
 };

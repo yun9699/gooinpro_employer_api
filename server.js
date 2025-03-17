@@ -5,6 +5,8 @@ import bodyParser from 'body-parser'; // 요청 본문 처리
 import connectMongoDB from './src/config/mongoDB.js';
 import { configureWebSocket } from './src/socket/socketConfig.js';  // WebSocket 설정 파일 임포트
 import corsConfig from "./src/security/config/CustomSecurityConfig.js"; // CORS 설정
+import path from 'path';
+import fs from 'fs';
 
 // 라우터
 import chatRoomRoutes from './src/routes/ChatRoomRoutes.js';
@@ -17,6 +19,7 @@ import JWTNotFilter from "./src/security/filter/JWTNotFilter.js";
 import PartTimerRoutes from "./src/routes/PartTimerRoutes.js";
 import JobPostingsRoutes from './src/routes/JobPostingsRoutes.js';
 import CalendarRoutes from "./src/routes/CalendarRoutes.js";
+import jobPostingImageRoutes from './src/routes/JobPostingImageRoutes.js';
 
 // 환경 변수 로드
 dotenv.config();
@@ -46,6 +49,18 @@ app.use(corsConfig);        // CORS 설정
 // app.use(JWTCheckFilter(excludedPaths)); // jwtFilter 걸기
 app.use(JWTNotFilter()); // 개발위해서 filter 제외
 
+// 업로드 디렉토리 생성
+app.use((req, res, next) => {
+    const uploadDir = path.join(process.cwd(), 'uploads/jobpostings');
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    next();
+});
+
+// 정적 파일 서빙 설정
+app.use('/uploads/jobpostings', express.static('uploads/jobpostings'));
+
 // 라우터 연결
 app.use('/employer/api/v1/login', EmployerLoginRoutes);
 app.use('/employer/api/v1/emp', EmployerRoutes);
@@ -55,8 +70,10 @@ app.use('/api/map', mapRoutes);
 app.use('/employer/api/v1/partTimer', PartTimerRoutes);
 app.use('/employer/api/v1/jobposting', JobPostingsRoutes);
 app.use('/employer/api/v1/calendar', CalendarRoutes);
+app.use('/api/jobpostings-images', jobPostingImageRoutes);
 
 // 서버 시작
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
