@@ -1,14 +1,13 @@
 import { registerJobPostingService, editJobPostingService, deleteJobPostingService, getOneJobPostingService, listJobPostingsService,} from "../services/JobPostingsService.js";
 import JobPostingRegisterDTO from "../dto/jobpostingdto/JobPostingRegisterDTO.js";
 import JobPostingResponseDTO from "../dto/jobpostingdto/JobPostingResponseDTO.js";
+import JobPostingUpdateDTO from "../dto/jobpostingdto/JobPostingUpdateDTO.js";
 
 // 구인공고 등록
 const registerJobPosting = async (req, res) => {
     try {
-        const { eno } = req.body; // 로그인한 사용자의 eno
-        const jobPostingData = req.body;
-
-        console.log("요청 데이터:", req.body);
+        const { eno, ...jobPostingData } = req.body;
+        const { jpifilenames } = req.body; // 이미지 파일명 배열 추출
 
         // DTO 생성
         const registerDTO = new JobPostingRegisterDTO(
@@ -23,10 +22,9 @@ const registerJobPosting = async (req, res) => {
             jobPostingData.jpworkStartTime,
             jobPostingData.jpworkEndTime,
             jobPostingData.wroadAddress,
-            jobPostingData.wdetailAddress
+            jobPostingData.wdetailAddress,
+            jpifilenames // 이미지 파일명 배열 추가
         );
-
-        console.log("생성된 DTO:", registerDTO);
 
         // 서비스 호출
         const newJobPosting = await registerJobPostingService(registerDTO);
@@ -44,22 +42,33 @@ const registerJobPosting = async (req, res) => {
     }
 };
 
+
 // 구인공고 수정
 const editJobPosting = async (req, res) => {
     try {
-        const { jpno } = req.params; // 공고 번호
-        const { eno } = req.body; // 로그인한 사용자의 eno
-        const jobPostingData = req.body;
+        const { jpno } = req.params;
+        const { eno, ...jobPostingData } = req.body;
 
-        // DTO 생성
-        const editDTO = {
+        // UpdateDTO 사용
+        const updateDTO = new JobPostingUpdateDTO(
             jpno,
             eno,
-            ...jobPostingData,
-        };
+            jobPostingData.jpname,
+            jobPostingData.jpcontent,
+            jobPostingData.jpvacancies,
+            jobPostingData.jphourlyRate,
+            jobPostingData.jpworkDays,
+            jobPostingData.jpminDuration,
+            jobPostingData.jpmaxDuration,
+            jobPostingData.jpworkStartTime,
+            jobPostingData.jpworkEndTime,
+            jobPostingData.jpifilenames
+        );
+
+        console.log("수정 요청 DTO:", updateDTO);
 
         // 서비스 호출
-        const message = await editJobPostingService(editDTO);
+        const message = await editJobPostingService(updateDTO);
 
         res.status(200).json({
             status: "success",
@@ -93,15 +102,18 @@ const deleteJobPosting = async (req, res) => {
 // 단일 조회
 const getOneJobPosting = async (req, res) => {
     try {
-        const { jpno } = req.params; // 공고 번호
-        const { eno } = req.query; // 고용인 ID
+        const { jpno } = req.params;
+        const { eno } = req.query;
 
-        // 서비스 호출
+        // 서비스 호출 (이미지 정보 포함)
         const jobPosting = await getOneJobPostingService(jpno, eno);
 
         res.status(200).json({
             status: "success",
-            data: jobPosting,
+            data: {
+                ...jobPosting,
+                images: jobPosting.jpifilenames // 이미지 파일명 배열 포함
+            },
         });
     } catch (error) {
         console.error("구인공고 단일 조회 실패:", error);
