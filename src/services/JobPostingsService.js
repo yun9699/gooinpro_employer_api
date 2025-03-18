@@ -193,10 +193,15 @@ const getOneJobPostingService = async (jpno, eno) => {
             jpno: jobPosting.jpno,
             eno: jobPosting.eno,
             jpname: jobPosting.jpname,
+            jpcontent: jobPosting.jpcontent, // ✅ jpcontent 추가
             jpvacancies: jobPosting.jpvacancies,
             jphourlyRate: jobPosting.jphourlyRate,
             jpworkDays: jobPosting.jpworkDays,
             jpregdate: jobPosting.jpregdate,
+            jpminDuration: jobPosting.jpminDuration, // ✅ 추가
+            jpmaxDuration: jobPosting.jpmaxDuration, // ✅ 추가
+            jpworkStartTime: jobPosting.jpworkStartTime, // ✅ 추가
+            jpworkEndTime: jobPosting.jpworkEndTime, // ✅ 추가
             WorkPlace: jobPosting.WorkPlace,
             jpifilenames: jobPosting.JobPostingImages.map(img => img.jpifilename)
         };
