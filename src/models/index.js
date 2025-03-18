@@ -9,7 +9,6 @@ import ComplaintsImage from "./ComplaintsImage.js";
 import PartTimerImage from "./PartTimerImage.js";
 import Qna from "./Qna.js";
 import Faq from "./Faq.js";
-import Chatroom from "./Chatroom.js";
 import JobPostings from './JobPostings.js';
 import JobMatchings from './JobMatchings.js';
 import JobPostingApplication from "./JobPostingApplication.js";
@@ -21,7 +20,6 @@ import { sequelize } from '../config/MariaDB.js';
 
 //Admin
 Admin.hasMany(Qna, { foreignKey: 'admno'});
-Admin.hasMany(Chatroom, { foreignKey: 'admno'});
 Admin.hasMany(Faq, { foreignKey: 'admno'});
 
 //Employer
@@ -30,7 +28,6 @@ Employer.hasMany(Review, { foreignKey: 'eno' });
 Employer.hasMany(WorkPlace, { foreignKey: 'eno' });
 Employer.hasMany(Complaints, { foreignKey: 'eno' });
 Employer.hasMany(JobMatchings, { foreignKey: 'eno' });
-Employer.hasMany(Chatroom, { foreignKey: 'eno' });
 
 //PartTImer
 PartTimer.hasMany(WorkLogs, { foreignKey: 'pno' });
@@ -96,10 +93,6 @@ Qna.belongsTo(Admin, { foreignKey: 'admno' });
 //FAQ
 Faq.belongsTo(Admin, { foreignKey: 'admno' });
 
-//Chatroom
-Chatroom.belongsTo(PartTimer, { foreignKey: 'pno' });
-Chatroom.belongsTo(Admin, { foreignKey: 'admno' });
-
 const models = {
     Employer,
     PartTimer,
@@ -113,7 +106,6 @@ const models = {
     JobPostingImage,
     Qna,
     Faq,
-    Chatroom,
     Complaints,
     ComplaintsImage,
     PartTimerImage,
