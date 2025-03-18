@@ -2,7 +2,7 @@ import {Sequelize} from "sequelize";
 
 // MariaDB 연결 설정
 const sequelize = new Sequelize('gooinprodb', 'gooinprodbuser', 'gooinprodbuser', {
-    host: 'localhost',
+    host: 'gooinprodb.chw6wee6k3li.ap-northeast-2.rds.amazonaws.com',
     port: 13307,
     dialect: 'mariadb',
 });
