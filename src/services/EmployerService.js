@@ -77,7 +77,7 @@ const returnMember = async (eemail) => {
         epw: newPassword,
         ename: "",
         ebirth: null,
-        egender: "",
+        egender: 0,
         isNew: true,
     });
 
