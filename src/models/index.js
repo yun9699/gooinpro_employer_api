@@ -15,7 +15,7 @@ import JobMatchings from './JobMatchings.js';
 import JobPostingApplication from "./JobPostingApplication.js";
 import JobPostingImage from './JobPostingImage.js';
 import Admin from "./Admin.js";
-import { sequelize } from "../config/MariaDB.js";
+import { sequelize } from '../config/MariaDB.js';
 
 // 관계 정의
 
@@ -62,7 +62,7 @@ JobPostings.belongsTo(Employer, { foreignKey: 'eno' });
 JobPostings.hasMany(JobMatchings, { foreignKey: 'jpno' });
 JobPostings.belongsTo(WorkPlace, { foreignKey: 'wpno' });
 JobPostings.hasMany(JobPostingApplication, { foreignKey: 'jpno' });
-JobPostings.belongsTo(Employer, { foreignKey: 'eno' });
+JobPostings.hasMany(JobPostingImage, {foreignKey: 'jpno' });
 
 // JobMatchings
 JobMatchings.belongsTo(PartTimer, { foreignKey: 'pno' });
@@ -101,7 +101,6 @@ Chatroom.belongsTo(PartTimer, { foreignKey: 'pno' });
 Chatroom.belongsTo(Admin, { foreignKey: 'admno' });
 
 const models = {
-    sequelize,
     Employer,
     PartTimer,
     WorkLogs,
@@ -118,7 +117,8 @@ const models = {
     Complaints,
     ComplaintsImage,
     PartTimerImage,
-    Admin
+    Admin,
+    sequelize
 }
 
 export default models;

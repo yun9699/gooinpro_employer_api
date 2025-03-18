@@ -3,119 +3,143 @@ import mapService from "../services/mapService.js";
 
 // 구인공고 등록
 const registerJobPostingService = async (registerDTO) => {
-    const transaction = await models.sequelize.transaction();
+    const transaction = await models.sequelize.transaction({});
     try {
-        console.log("[등록] DTO 데이터:", registerDTO);
-
-        // 1. 주소 좌표 변환 (수정된 mapService 구조 반영)
+        // 1. 주소 → 좌표 변환 (mapService 구조 반영)
         const { lat, lng } = await mapService.getGeocode(registerDTO.wroadAddress);
-        console.log("[등록] 변환 좌표:", { lat, lng });
+        if (!lat || !lng) {
+            throw new Error("주소에 대한 좌표를 찾을 수 없습니다.");
+        }
 
-        // 2. WorkPlace 생성
+        // 2. WorkPlace 생성 (숫자 타입 저장)
         const newWorkPlace = await models.WorkPlace.create({
             eno: registerDTO.eno,
             wroadAddress: registerDTO.wroadAddress,
             wdetailAddress: registerDTO.wdetailAddress,
-            wlati: lat.toString(),
-            wlong: lng.toString(),
+            wlati: lat,
+            wlong: lng,
             wdelete: false
         }, { transaction });
 
-        console.log("[등록] 생성된 WorkPlace:", newWorkPlace.wpno);
-
-        // 3. 구인공고 생성
+        // 3. JobPostings 생성
         const newJobPosting = await models.JobPostings.create({
             eno: registerDTO.eno,
             wpno: newWorkPlace.wpno,
             ...registerDTO
         }, { transaction });
 
+        // 이미지 저장
+        if (registerDTO.jpifilenames?.length > 0) {
+            await models.JobPostingImage.bulkCreate(
+                registerDTO.jpifilenames.map(filename => ({
+                    jpno: newJobPosting.jpno,
+                    eno: registerDTO.eno,
+                    jpifilename: filename
+                })),
+                { transaction }
+            );
+        }
+
         await transaction.commit();
         return newJobPosting;
-
     } catch (error) {
         await transaction.rollback();
-        console.error("[등록 실패] DTO:", registerDTO);
+        console.error("구인공고 등록 실패:", error);
         throw new Error(`구인공고 등록 실패: ${error.message}`);
     }
 };
 
+
 // 구인공고 수정
 const editJobPostingService = async (editDTO) => {
-    let transaction; // 트랜잭션 변수 선언
+    const transaction = await models.sequelize.transaction({});
     try {
-        // 1. 트랜잭션 생성
-        transaction = await models.sequelize.transaction();
-        console.log("트랜잭션 생성 성공:", !!transaction);
-
-        // 2. 필수 필드 검증
-        if (!editDTO.wpno) throw new Error("wpno 필수값 누락");
-        if (!editDTO.wroadAddress) throw new Error("주소 정보 누락");
-
-        // 3. 기존 WorkPlace 조회 (트랜잭션 사용)
-        const existingWorkPlace = await models.WorkPlace.findByPk(editDTO.wpno, {
-            transaction
+        // 1. 기존 구인공고 내용 조회
+        const jobPosting = await models.JobPostings.findOne({
+            where: { jpno: editDTO.jpno },
+            include: [{ model: models.WorkPlace }]
         });
-        if (!existingWorkPlace) throw new Error("근무지 정보 없음");
 
-        // 4. 주소 변경 여부 확인
-        const isAddressChanged =
-            editDTO.wroadAddress !== existingWorkPlace.wroadAddress ||
-            editDTO.wdetailAddress !== existingWorkPlace.wdetailAddress;
+        if (!jobPosting) {
+            throw new Error("수정할 공고를 찾을 수 없습니다.");
+        }
 
-        // 5. 주소 변경 시 좌표 갱신
-        if (isAddressChanged) {
+        // 2. 주소 좌표 변환
+        if (editDTO.wroadAddress) {
             const { lat, lng } = await mapService.getGeocode(editDTO.wroadAddress);
+            if (!lat || !lng) {
+                throw new Error("주소에 대한 좌표를 찾을 수 없습니다.");
+            }
+
+            // 3. WorkPlace 수정
             await models.WorkPlace.update(
                 {
                     wroadAddress: editDTO.wroadAddress,
                     wdetailAddress: editDTO.wdetailAddress,
-                    wlati: lat.toString(),
-                    wlong: lng.toString()
+                    wlati: lat,
+                    wlong: lng,
+                    wdelete: false
                 },
                 {
-                    where: { wpno: editDTO.wpno },
+                    where: { wpno: jobPosting.WorkPlace.wpno },
                     transaction
                 }
             );
         }
 
-        // 6. 구인공고 정보 업데이트
-        const [updatedCount] = await models.JobPostings.update(editDTO, {
-            where: {
-                jpno: editDTO.jpno,
-                eno: editDTO.eno
+        // 4. JobPostings 수정
+        await models.JobPostings.update(
+            {
+                jpname: editDTO.jpname,
+                jpcontent: editDTO.jpcontent,
+                jpvacancies: editDTO.jpvacancies,
+                jphourlyRate: editDTO.jphourlyRate,
+                jpworkDays: editDTO.jpworkDays,
+                jpminDuration: editDTO.jpminDuration,
+                jpmaxDuration: editDTO.jpmaxDuration,
+                jpworkStartTime: editDTO.jpworkStartTime,
+                jpworkEndTime: editDTO.jpworkEndTime,
             },
-            transaction
-        });
+            {
+                where: { jpno: editDTO.jpno, eno: editDTO.eno },
+                transaction
+            }
+        );
 
-        if (updatedCount === 0) throw new Error("수정 대상 없음");
+        // 5. 이미지 파일명 수정
+        if (editDTO.jpifilenames) {
+            await models.JobPostingImage.destroy({
+                where: { jpno: editDTO.jpno },
+                transaction
+            });
 
-        // 7. 트랜잭션 커밋
-        await transaction.commit();
-        return "구인공고 수정 성공";ss
-
-    } catch (error) {
-        // 🔥 에러 발생 시 트랜잭션 롤백 및 상세 로그 출력
-        if (transaction) {
-            await transaction.rollback();
-            console.error("[트랜잭션 롤백 완료]");
+            if (editDTO.jpifilenames.length > 0) {
+                await models.JobPostingImage.bulkCreate(
+                    editDTO.jpifilenames.map(filename => ({
+                        jpno: editDTO.jpno,
+                        eno: editDTO.eno,
+                        jpifilename: filename
+                    })),
+                    { transaction }
+                );
+            }
         }
 
-        console.error("[에러 발생] 트랜잭션:", !!transaction ? "존재" : "없음");
-        console.error("[에러 메시지]:", error.message);
-        console.error("[에러 스택]:", error.stack);
-
-        throw new Error(`구인공고 수정 실패: ${error.message}`);
+        await transaction.commit();
+        return "구인공고가 성공적으로 수정되었습니다.";
+    } catch (error) {
+        await transaction.rollback();
+        console.error("구인공고 수정 서비스 실패:", error);
+        throw new Error("구인공고 수정 중 오류 발생: " + error.message);
     }
 };
-
 
 
 // 구인공고 삭제
 const deleteJobPostingService = async (jpno, eno) => {
     const transaction = await models.sequelize.transaction();
     try {
+        // 1. 구인공고 삭제 (soft delete)
         const [deletedCount] = await models.JobPostings.update(
             { jpdelete: true },
             {
@@ -124,65 +148,100 @@ const deleteJobPostingService = async (jpno, eno) => {
             }
         );
 
-        if (deletedCount === 0) throw new Error("삭제 대상 없음");
+        if (deletedCount === 0) {
+            throw new Error("삭제할 공고를 찾을 수 없습니다.");
+        }
+
+        // 2. 관련 이미지 삭제 (실제 DB에서 삭제)
+        await models.JobPostingImage.destroy({
+            where: { jpno },
+            transaction
+        });
 
         await transaction.commit();
-        return "구인공고 삭제 성공";
-
+        return "구인공고와 관련 이미지가 성공적으로 삭제되었습니다.";
     } catch (error) {
         await transaction.rollback();
-        console.error("[삭제 실패]:", error);
-        throw new Error(`삭제 실패: ${error.message}`);
+        console.error("구인공고 삭제 서비스 실패:", error);
+        throw new Error("구인공고 삭제 중 오류 발생: " + error.message);
     }
 };
 
 // 구인공고 단일 조회
 const getOneJobPostingService = async (jpno, eno) => {
     try {
-        const result = await models.JobPostings.findOne({
+        const jobPosting = await models.JobPostings.findOne({
             where: { jpno, eno, jpdelete: false },
-            include: [{
-                model: models.WorkPlace,
-                attributes: ['wpno', 'wroadAddress', 'wdetailAddress', 'wlati', 'wlong'],
-                required: false
-            }],
-            raw: true,
-            nest: true
+            include: [
+                {
+                    model: models.WorkPlace,
+                    attributes: ['wroadAddress', 'wdetailAddress', 'wlati', 'wlong', 'wpno']
+                },
+                {
+                    model: models.JobPostingImage,
+                    attributes: ['jpifilename']
+                }
+            ]
         });
 
-        if (!result) throw new Error("공고를 찾을 수 없음");
+        if (!jobPosting) {
+            throw new Error("조회할 공고를 찾을 수 없습니다.");
+        }
 
-        // 데이터 구조 평탄화
+        // DTO 대신 직접 객체를 반환
         return {
-            ...result,
-            ...result.WorkPlace
+            jpno: jobPosting.jpno,
+            eno: jobPosting.eno,
+            jpname: jobPosting.jpname,
+            jpvacancies: jobPosting.jpvacancies,
+            jphourlyRate: jobPosting.jphourlyRate,
+            jpworkDays: jobPosting.jpworkDays,
+            jpregdate: jobPosting.jpregdate,
+            WorkPlace: jobPosting.WorkPlace,
+            jpifilenames: jobPosting.JobPostingImages.map(img => img.jpifilename)
         };
-
     } catch (error) {
-        console.error("[단일 조회 실패]:", error);
-        throw new Error(`조회 실패: ${error.message}`);
+        console.error("구인공고 단일 조회 서비스 실패:", error);
+        throw new Error("구인공고 단일 조회 중 오류가 발생했습니다.");
     }
 };
+
+
 
 // 구인공고 리스트 조회
 const listJobPostingsService = async (eno) => {
     try {
-        return await models.JobPostings.findAll({
+        const jobPostings = await models.JobPostings.findAll({
             where: { eno, jpdelete: false },
-            include: [{
-                model: models.WorkPlace,
-                attributes: ['wroadAddress', 'wdetailAddress'],
-                required: false
-            }],
+            include: [
+                {
+                    model: models.WorkPlace,
+                    attributes: ['wroadAddress', 'wdetailAddress'],
+                    required: false
+                },
+                {
+                    model: models.JobPostingImage,
+                    attributes: ['jpifilename'],
+                    required: false
+                }
+            ],
             order: [["jpregdate", "DESC"]],
             raw: true,
             nest: true
         });
+
+        return jobPostings.map(post => ({
+            ...post,
+            jpifilenames: post.JobPostingImages
+                ? [post.JobPostingImages.jpifilename].filter(Boolean)
+                : []
+        }));
     } catch (error) {
         console.error("[목록 조회 실패]:", error);
         throw new Error(`목록 조회 실패: ${error.message}`);
     }
 };
+
 
 export {
     registerJobPostingService,
