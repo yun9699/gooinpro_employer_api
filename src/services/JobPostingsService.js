@@ -192,13 +192,16 @@ const getOneJobPostingService = async (jpno, eno) => {
         return {
             jpno: jobPosting.jpno,
             eno: jobPosting.eno,
+            jpcontent: jobPosting.jpcontent,
             jpname: jobPosting.jpname,
             jpvacancies: jobPosting.jpvacancies,
             jphourlyRate: jobPosting.jphourlyRate,
             jpworkDays: jobPosting.jpworkDays,
             jpregdate: jobPosting.jpregdate,
             WorkPlace: jobPosting.WorkPlace,
-            jpifilenames: jobPosting.JobPostingImages.map(img => img.jpifilename)
+            jpifilenames: jobPosting.JobPostingImages.map(img => img.jpifilename),
+            jpworkStartTime: jobPosting.jpworkStartTime,
+            jpworkEndTime: jobPosting.jpworkEndTime,
         };
     } catch (error) {
         console.error("구인공고 단일 조회 서비스 실패:", error);
