@@ -10,7 +10,6 @@ import fs from 'fs';
 
 // 라우터
 import mapRoutes from './src/routes/MapRoutes.js';
-import JWTCheckFilter from "./src/security/filter/JWTCheckFilter.js";
 import EmployerLoginRoutes from "./src/routes/EmployerLoginRoutes.js";
 import EmployerRoutes from "./src/routes/EmployerRoutes.js";
 import JWTNotFilter from "./src/security/filter/JWTNotFilter.js";
