@@ -2,8 +2,6 @@ import express from 'express';
 import http from 'http'; // HTTP 서버 생성 모듈
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser'; // 요청 본문 처리
-import connectMongoDB from './src/config/mongoDB.js';
-import { configureWebSocket } from './src/socket/socketConfig.js';  // WebSocket 설정 파일 임포트
 import corsConfig from "./src/security/config/CustomSecurityConfig.js"; // CORS 설정
 import path from 'path';
 import fs from 'fs';
@@ -21,16 +19,9 @@ import jobPostingImageRoutes from './src/routes/JobPostingImageRoutes.js';
 // 환경 변수 로드
 dotenv.config();
 
-// MongoDB 연결
-connectMongoDB();
-
 // Express 애플리케이션 및 서버 생성
 const app = express();
 const server = http.createServer(app);
-
-// WebSocket 서버 설정
-const wss = configureWebSocket(server);  // WebSocket 서버 설정 호출
-
 
 // 서버 설정
 const PORT = 3000;
