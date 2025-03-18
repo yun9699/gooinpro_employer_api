@@ -9,10 +9,7 @@ import path from 'path';
 import fs from 'fs';
 
 // 라우터
-import chatRoomRoutes from './src/routes/ChatRoomRoutes.js';
-import ChatRoutes from './src/routes/ChatRoutes.js';
 import mapRoutes from './src/routes/MapRoutes.js';
-import JWTCheckFilter from "./src/security/filter/JWTCheckFilter.js";
 import EmployerLoginRoutes from "./src/routes/EmployerLoginRoutes.js";
 import EmployerRoutes from "./src/routes/EmployerRoutes.js";
 import JWTNotFilter from "./src/security/filter/JWTNotFilter.js";
@@ -64,8 +61,6 @@ app.use('/uploads/jobpostings', express.static('uploads/jobpostings'));
 // 라우터 연결
 app.use('/employer/api/v1/login', EmployerLoginRoutes);
 app.use('/employer/api/v1/emp', EmployerRoutes);
-app.use('/employer/api/v1/chatmessage', ChatRoutes(wss)); // WebSocket 서버 전달
-app.use('/employer/api/v1/chatroom', chatRoomRoutes);
 app.use('/api/map', mapRoutes);
 app.use('/employer/api/v1/partTimer', PartTimerRoutes);
 app.use('/employer/api/v1/jobposting', JobPostingsRoutes);
