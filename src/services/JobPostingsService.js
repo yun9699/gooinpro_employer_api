@@ -5,28 +5,23 @@ import mapService from "../services/mapService.js";
 const registerJobPostingService = async (registerDTO) => {
     const transaction = await models.sequelize.transaction({});
     try {
-        // 주소 좌표 변환
-        const coords = await mapService.getGeocode(registerDTO.wroadAddress);
-        if (!coords.addresses || coords.addresses.length === 0) {
+        // 1. 주소 → 좌표 변환 (mapService 구조 반영)
+        const { lat, lng } = await mapService.getGeocode(registerDTO.wroadAddress);
+        if (!lat || !lng) {
             throw new Error("주소에 대한 좌표를 찾을 수 없습니다.");
         }
 
-        const location = coords.addresses[0];
-        const lat = location.y; // 위도
-        const lng = location.x; // 경도
-        console.log("[등록] 변환 좌표:", { lat, lng });
-
-        // WorkPlace 생성
+        // 2. WorkPlace 생성 (숫자 타입 저장)
         const newWorkPlace = await models.WorkPlace.create({
             eno: registerDTO.eno,
             wroadAddress: registerDTO.wroadAddress,
             wdetailAddress: registerDTO.wdetailAddress,
-            wlati: lat.toString(),
-            wlong: lng.toString(),
+            wlati: lat,
+            wlong: lng,
             wdelete: false
         }, { transaction });
 
-        // JobPostings 생성
+        // 3. JobPostings 생성
         const newJobPosting = await models.JobPostings.create({
             eno: registerDTO.eno,
             wpno: newWorkPlace.wpno,
@@ -59,7 +54,7 @@ const registerJobPostingService = async (registerDTO) => {
 const editJobPostingService = async (editDTO) => {
     const transaction = await models.sequelize.transaction({});
     try {
-        // 1. 기존 JobPostings 조회
+        // 1. 기존 구인공고 내용 조회
         const jobPosting = await models.JobPostings.findOne({
             where: { jpno: editDTO.jpno },
             include: [{ model: models.WorkPlace }]
@@ -71,23 +66,22 @@ const editJobPostingService = async (editDTO) => {
 
         // 2. 주소 좌표 변환
         if (editDTO.wroadAddress) {
-            const coords = await mapService.getGeocode(editDTO.wroadAddress);
-            if (!coords.addresses || coords.addresses.length === 0) {
+            const { lat, lng } = await mapService.getGeocode(editDTO.wroadAddress);
+            if (!lat || !lng) {
                 throw new Error("주소에 대한 좌표를 찾을 수 없습니다.");
             }
-            const location = coords.addresses[0];
 
             // 3. WorkPlace 수정
             await models.WorkPlace.update(
                 {
                     wroadAddress: editDTO.wroadAddress,
                     wdetailAddress: editDTO.wdetailAddress,
-                    wlati: location.y.toString(),
-                    wlong: location.x.toString(),
+                    wlati: lat,
+                    wlong: lng,
                     wdelete: false
                 },
                 {
-                    where: { wpno: jobPosting.WorkPlace.wpno }, // ✅ 기존 wpno 사용
+                    where: { wpno: jobPosting.WorkPlace.wpno },
                     transaction
                 }
             );
@@ -139,6 +133,7 @@ const editJobPostingService = async (editDTO) => {
         throw new Error("구인공고 수정 중 오류 발생: " + error.message);
     }
 };
+
 
 // 구인공고 삭제
 const deleteJobPostingService = async (jpno, eno) => {
