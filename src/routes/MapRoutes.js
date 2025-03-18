@@ -1,7 +1,6 @@
 import express from 'express';
 import models from '../models/index.js';
 import axios from 'axios';
-import mapService from '../services/mapService.js';
 
 const router = express.Router();
 
