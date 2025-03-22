@@ -9,22 +9,17 @@
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="gooinprochatdb@localhost" uuid="d039c381-80df-449b-9180-0a0ba5e0c6d8">
-      <driver-ref>mongo.4</driver-ref>
+      <driver-ref>mongo</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
       <jdbc-url>mongodb://localhost:27017/gooinprochatdb</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="gooinprodb@gooinprodb.chw6wee6k3li.ap-northeast-2.rds.amazonaws.com" uuid="8ef1ac15-0be2-4fc9-a4cf-99b2b8ee4512">
+    <data-source source="LOCAL" name="gooinprodb@gooinprodb.chw6wee6k3li.ap-northeast-2.rds.amazonaws.com" uuid="f30e07a3-6696-4525-805d-705bdbe01be3">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mariadb://gooinprodb.chw6wee6k3li.ap-northeast-2.rds.amazonaws.com:13307/gooinprodb</jdbc-url>
-      <jdbc-additional-properties>
-        <property name="com.intellij.clouds.kubernetes.db.host.port" />
-        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
-        <property name="com.intellij.clouds.kubernetes.db.container.port" />
-      </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

@@ -49,6 +49,10 @@ const PartTimer = sequelize.define('PartTimer', {
     pdetailAddress: {   //상세 주소
         type: DataTypes.STRING,
         allowNull: true
+    },
+    ptoken: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     tableName: 'tbl_partTimer',  // 실제 테이블 이름을 지정
