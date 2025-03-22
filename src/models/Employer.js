@@ -44,6 +44,10 @@ const Employer = sequelize.define('Employer', {
     isNew: {
         type: DataTypes.BOOLEAN,
         defalutValue: true
+    },
+    etoken: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     tableName: 'tbl_employer',  // 실제 테이블 이름을 지정
