@@ -8,6 +8,9 @@ import ApplicantListDTO from "../dto/partTimerdto/ApplicantListDTO.js";
 import ApplicantReadDTO from "../dto/partTimerdto/ApplicantReadDTO.js";
 import PartTimerWorkHistoryDTO from "../dto/partTimerdto/PartTimerWorkHistoryDTO.js";
 import PartTimerWithPayListDTO from "../dto/partTimerdto/PartTimerWithPayListDTO.js";
+import {FcmService} from "./FcmService.js";
+
+
 
 // 내 근로자 리스트 출력
 const getMyPartTimerListService = async (eno, page, size) => {
@@ -138,7 +141,7 @@ const getJobApplicationsListService = async (jpno, page, size) => {
                 left join tbl_partTimer p on jpa.pno = p.pno
                 left join tbl_partTimerImage pi on jpa.pno = pi.pno
             where
-                jpa.jpadelete = false and jp.jpno = :jpno
+                jpa.jpadelete = false and jp.jpno = :jpno and jpa.jpastatus = 0
             order by
                 jpano
             limit
@@ -381,9 +384,39 @@ const getPartTimerListWithPayCountService = async (eno, year, month) => {
     return data['count(*)'];
 }
 
-const getAcceeptJobApplicationService = async (jpano, status) => {
+const getAcceeptJobApplicationService = async (jpano, status) => { // 파트타이머 신청 수락
 
     console.log(jpano, status);
+
+    const jobPostingApplication = await sequelize.query(
+        `
+            select jpno, jpano, jpahourlyRate, pno from tbl_jobPostingApplication
+            where jpano = :jpano
+            `, {
+            type: QueryTypes.SELECT,
+            replacements: {jpano: jpano}
+        });
+
+    const pno = jobPostingApplication[0].pno;
+
+    const partTimer = await sequelize.query(
+        `
+                select * from tbl_partTimer
+                where pno = :pno
+            `, {
+            type: QueryTypes.SELECT,
+            replacements: { pno: pno }
+        });
+
+
+    const jobPosting = await sequelize.query(
+        `
+            select eno, jpname, jpworkStartTime, jpworkEndTime, jpmaxDuration, jpminDuration, jpworkDays from tbl_jobPostings
+            where jpno = :jpno
+            `, {
+            type: QueryTypes.SELECT,
+            replacements: { jpno: jobPostingApplication[0].jpno }
+        });
 
     if(status == 1) {
         const result = await sequelize.query(
@@ -399,23 +432,6 @@ const getAcceeptJobApplicationService = async (jpano, status) => {
                 replacements: {jpano: jpano}
             }
         );
-        const jobPostingApplication = await sequelize.query(
-            `
-            select jpano, jpahourlyRate from tbl_jobPostingApplication
-            where jpano = :jpano
-            `, {
-                type: QueryTypes.SELECT,
-                replacements: {jpano: jpano}
-            });
-
-        const jobPosting = await sequelize.query(
-            `
-            select eno, jpworkStartTime, jpworkEndTime, jpmaxDuration, jpminDuration, jpworkDays from tbl_jobPostings
-            where jpno = :jpano
-            `, {
-                type: QueryTypes.SELECT,
-                replacements: { jpano: jobPostingApplication[0].jpano }
-            });
 
         // DATETIME 형식으로 시간 변환
         const currentDate = new Date().toISOString().split('T')[0]; // 현재 날짜 (yyyy-mm-dd)만 추출
@@ -424,17 +440,33 @@ const getAcceeptJobApplicationService = async (jpano, status) => {
 
         const createResult = await sequelize.query(
             `
-            insert into tbl_jobMatchings (jmregdate, jmstartDate, jmhourlyRate, jmworkDays, jmworkStartTime, jmworkEndTime)
-            values (NOW(), NOW(), :jmhourlyRate, :jmworkDays, :jmworkStartTime, :jmworkEndTime)
+            insert into tbl_jobMatchings (jmregdate, jmstartDate, jmhourlyRate, jmworkDays, jmworkStartTime, jmworkEndTime, eno, pno, jpno)
+            values (NOW(), NOW(), :jmhourlyRate, :jmworkDays, :jmworkStartTime, :jmworkEndTime, :eno, :pno, :jpno)
             `, {
                 type: QueryTypes.INSERT,
                 replacements: {
                     jmhourlyRate: jobPostingApplication[0].jpahourlyRate,
                     jmworkDays: jobPosting[0].jpworkDays,
                     jmworkStartTime: jmworkStartTime,
-                    jmworkEndTime: jmworkEndTime
+                    jmworkEndTime: jmworkEndTime,
+                    eno: jobPosting[0].eno,
+                    pno: partTimer[0].pno,
+                    jpno: jobPostingApplication[0].jpno
                 }
             });
+
+        console.log("parttmer:",partTimer[0]);
+        console.log("------------------------ ptoken");
+        console.log("parttmer:",partTimer[0].ptoken);
+        console.log("jobpostings title:",jobPosting[0].jpname);
+
+        const tokenB = [partTimer[0].ptoken]
+        const body = "수락됨"
+
+        await FcmService(tokenB, jobPosting[0].jpname, body).then((res) => {
+            console.log(res);
+        });
+
     } else{
         const result = await sequelize.query(
             `
@@ -449,6 +481,13 @@ const getAcceeptJobApplicationService = async (jpano, status) => {
                 replacements: {jpano: jpano}
             }
         )
+
+        const tokenB = [partTimer[0].ptoken]
+        const body = "거절됨"
+
+        await FcmService(tokenB, jobPosting[0].jpname, body).then((res) => {
+            console.log(res);
+        });
     }
 }
 
