@@ -1,4 +1,4 @@
-import { registerJobPostingService, editJobPostingService, deleteJobPostingService, getOneJobPostingService, listJobPostingsService,} from "../services/JobPostingsService.js";
+import { registerJobPostingService, editJobPostingService, deleteJobPostingService, getOneJobPostingService, listJobPostingsService, listAllJobPostingsService } from "../services/JobPostingsService.js";
 import JobPostingRegisterDTO from "../dto/jobpostingdto/JobPostingRegisterDTO.js";
 import JobPostingResponseDTO from "../dto/jobpostingdto/JobPostingResponseDTO.js";
 import JobPostingUpdateDTO from "../dto/jobpostingdto/JobPostingUpdateDTO.js";
@@ -139,4 +139,25 @@ const listJobPostings = async (req, res) => {
     }
 };
 
-export { registerJobPosting, editJobPosting, deleteJobPosting, getOneJobPosting, listJobPostings };
+// 모든 구인공고 리스트 조회
+const listAllJobPostings = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const size = parseInt(req.query.size) || 10;
+
+        const result = await listAllJobPostingsService(page, size);
+
+        res.status(200).json({
+            status: 'success',
+            ...result
+        });
+    } catch (error) {
+        console.error("모든 구인공고 목록 조회 실패:", error);
+        res.status(500).json({
+            status: 'error',
+            message: error.message || "모든 구인공고 목록 조회 중 오류가 발생했습니다."
+        });
+    }
+};
+
+export { registerJobPosting, editJobPosting, deleteJobPosting, getOneJobPosting, listJobPostings, listAllJobPostings };
