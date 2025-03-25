@@ -271,17 +271,17 @@ const getPartTimerPayByYearMonthService = async (eno, month, year) => {
 
     const result = await sequelize.query(
         `
-        select
-            SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS sum
-        FROM
-            tbl_jobMatchings jm
-            LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
-        WHERE
-            jm.eno = :eno
-            AND wlstartTime IS NOT NULL
-            AND wlendTime IS NOT NULL
-            AND MONTH(wlstartTime) = :month
-            AND YEAR(wlstartTime) = :year
+            select
+                SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS sum
+            FROM
+                tbl_jobMatchings jm
+                LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
+            WHERE
+                jm.eno = :eno
+              AND wlstartTime IS NOT NULL
+              AND wlendTime IS NOT NULL
+              AND MONTH(wlstartTime) = :month
+              AND YEAR(wlstartTime) = :year
         `, {
             type: QueryTypes.SELECT,
             replacements: { eno, month, year }
@@ -296,16 +296,16 @@ const getPartTImerPayByYearService = async (eno, year) => {
 
     const result = await sequelize.query(
         `
-        select
-            SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS sum
-        FROM
-            tbl_jobMatchings jm
-            LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
-        WHERE
-            jm.eno = :eno
-            AND wlstartTime IS NOT NULL
-            AND wlendTime IS NOT NULL
-            AND YEAR(wlstartTime) = :year
+            select
+                SUM(jmhourlyRate * TIMESTAMPDIFF(MINUTE, wlstartTime, wlendTime) / 60) AS sum
+            FROM
+                tbl_jobMatchings jm
+                LEFT JOIN tbl_workLogs wl ON jm.jmno = wl.jmno
+            WHERE
+                jm.eno = :eno
+              AND wlstartTime IS NOT NULL
+              AND wlendTime IS NOT NULL
+              AND YEAR(wlstartTime) = :year
         `, {
             type: QueryTypes.SELECT,
             replacements: { eno, year }

@@ -8,7 +8,7 @@ import {
     getPartTimerOneService, getPartTimerPayByYearMonthService, getPartTImerPayByYearService,
     getPartTimerTotalPayService,
     getPartTimerWorkHistoryListService,
-    getPartTimerWorkStatusService
+    getPartTimerWorkStatusService,
 } from "../services/PartTimerService.js";
 import PageRequestDTO from "../dto/common/PageRequestDTO.js";
 import PageResponseDTO from "../dto/common/PageResponseDTO.js";
