@@ -381,9 +381,81 @@ const getPartTimerListWithPayCountService = async (eno, year, month) => {
     return data['count(*)'];
 }
 
+const getAcceeptJobApplicationService = async (jpano, status) => {
+
+    console.log(jpano, status);
+
+    if(status == 1) {
+        const result = await sequelize.query(
+            `
+            update
+                tbl_jobPostingApplication
+            set
+                jpastatus = 1
+            where
+                jpano = :jpano
+            `, {
+                type: QueryTypes.UPDATE,
+                replacements: {jpano: jpano}
+            }
+        );
+        const jobPostingApplication = await sequelize.query(
+            `
+            select jpano, jpahourlyRate from tbl_jobPostingApplication
+            where jpano = :jpano
+            `, {
+                type: QueryTypes.SELECT,
+                replacements: {jpano: jpano}
+            });
+
+        const jobPosting = await sequelize.query(
+            `
+            select eno, jpworkStartTime, jpworkEndTime, jpmaxDuration, jpminDuration, jpworkDays from tbl_jobPostings
+            where jpno = :jpano
+            `, {
+                type: QueryTypes.SELECT,
+                replacements: { jpano: jobPostingApplication[0].jpano }
+            });
+
+        // DATETIME 형식으로 시간 변환
+        const currentDate = new Date().toISOString().split('T')[0]; // 현재 날짜 (yyyy-mm-dd)만 추출
+        const jmworkStartTime = `${currentDate} ${jobPosting[0].jpworkStartTime}`; // 날짜 + 시간 결합
+        const jmworkEndTime = `${currentDate} ${jobPosting[0].jpworkEndTime}`; // 날짜 + 시간 결합
+
+        const createResult = await sequelize.query(
+            `
+            insert into tbl_jobMatchings (jmregdate, jmstartDate, jmhourlyRate, jmworkDays, jmworkStartTime, jmworkEndTime)
+            values (NOW(), NOW(), :jmhourlyRate, :jmworkDays, :jmworkStartTime, :jmworkEndTime)
+            `, {
+                type: QueryTypes.INSERT,
+                replacements: {
+                    jmhourlyRate: jobPostingApplication[0].jpahourlyRate,
+                    jmworkDays: jobPosting[0].jpworkDays,
+                    jmworkStartTime: jmworkStartTime,
+                    jmworkEndTime: jmworkEndTime
+                }
+            });
+    } else{
+        const result = await sequelize.query(
+            `
+            update
+                tbl_jobPostingApplication
+            set
+                jpastatus = 2
+            where
+                jpano = :jpano
+            `, {
+                type: QueryTypes.UPDATE,
+                replacements: {jpano: jpano}
+            }
+        )
+    }
+}
+
 export {
     getMyPartTimerListService, getMyPartTimerCountService, getPartTimerOneService, getPartTimerWorkStatusService,
     getJobApplicationsListService, getJobApplicationsCountService, getApplicantReadService,
     getPartTimerWorkHistoryListService, getPartTimerTotalPayService, getPartTimerPayByYearMonthService,
-    getPartTImerPayByYearService, getPartTimerListWithPayService, getPartTimerListWithPayCountService
+    getPartTImerPayByYearService, getPartTimerListWithPayService, getPartTimerListWithPayCountService,
+    getAcceeptJobApplicationService
 };

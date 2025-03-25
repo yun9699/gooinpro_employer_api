@@ -246,6 +246,8 @@ const listJobPostingsService = async (eno) => {
 };
 
 
+
+
 export {
     registerJobPostingService,
     editJobPostingService,
