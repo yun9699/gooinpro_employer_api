@@ -245,11 +245,63 @@ const listJobPostingsService = async (eno) => {
     }
 };
 
+const listAllJobPostingsService = async (page = 1, size = 10) => {
+    try {
+        const offset = (page - 1) * size;
+
+        const jobPostings = await models.JobPostings.findAll({
+            where: { jpdelete: false },
+            include: [
+                {
+                    model: models.WorkPlace,
+                    attributes: ['wroadAddress', 'wdetailAddress'],
+                    required: false
+                },
+                {
+                    model: models.JobPostingImage,
+                    attributes: ['jpifilename'],
+                    required: false
+                }
+            ],
+            order: [["jpregdate", "DESC"]],
+            limit: size,
+            offset: offset,
+            raw: true,
+            nest: true
+        });
+
+        // 전체 레코드 수 조회
+        const totalCount = await models.JobPostings.count({
+            where: { jpdelete: false }
+        });
+
+        return {
+            data: jobPostings.map(post => ({
+                ...post,
+                jpifilenames: post.JobPostingImages
+                    ? [post.JobPostingImages.jpifilename].filter(Boolean)
+                    : []
+            })),
+            totalPages: Math.ceil(totalCount / size),
+            pageNumList: Array.from({ length: Math.ceil(totalCount / size) }, (_, i) => i + 1),
+            number: page - 1,
+            next: page < Math.ceil(totalCount / size),
+            prev: page > 1,
+            nextPage: page < Math.ceil(totalCount / size) ? parseInt(page) + 1 : null,
+            prevPage: page > 1 ? parseInt(page) - 1 : null
+        };
+    } catch (error) {
+        console.error("[전체 목록 조회 실패]:", error);
+        throw new Error(`전체 목록 조회 실패: ${error.message}`);
+    }
+};
+
 
 export {
     registerJobPostingService,
     editJobPostingService,
     deleteJobPostingService,
     getOneJobPostingService,
-    listJobPostingsService
+    listJobPostingsService,
+    listAllJobPostingsService,
 };

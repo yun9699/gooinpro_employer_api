@@ -2,9 +2,10 @@ import Employer from "../models/Employer.js";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import EmployerDTO from "../dto/employerdto/EmployerDTO.js";
-import EmployerRegisterDTO from "../dto/employerdto/EmployerRegisterDTO.js";
 import EmployerReadDTO from "../dto/employerdto/EmployerReadDTO.js";
 import EmployerEditDTO from "../dto/employerdto/EmployerEditDTO.js";
+import FcmReponseDTO from "../dto/employerdto/FcmReponseDTO.js";
+import {token} from "morgan";
 
 const authKakao = async (accessToken) => {
     console.log("-------------authKakaoService-------------");
@@ -253,5 +254,30 @@ const EditEmployer = async (eno, updateData) => {
     )
 }
 
+// FCM 토큰 DB 저장
+const saveEmployerToken = async (eno, etoken) => {
+    console.log("Employer FCM Token Save:", eno);
 
-export { authKakao, authGoogle, authNaver, returnMember, registerEmployerService, ReadEmployer, useAuthTokenGetNaverAccessToken, EditEmployer };
+    const user = await Employer.findOne({
+        where: { eno }
+    });
+
+    // 고용주 찾기
+    if (!user) {
+        throw new Error("고용주를 찾을 수 없습니다");
+    }
+
+    // FCM 토큰 저장
+    user.etoken = etoken;
+    const updatedEmployer = await user.save();
+
+    // FcmResponseDTO 객체 생성
+    const fcmResponseDTO = new FcmReponseDTO(updatedEmployer.eno, updatedEmployer.etoken);
+
+    // DTO 반환
+    console.log("FCM 토큰 저장 완료:", fcmResponseDTO);
+    return fcmResponseDTO;
+};
+
+
+export { authKakao, authGoogle, authNaver, returnMember, registerEmployerService, ReadEmployer, useAuthTokenGetNaverAccessToken, EditEmployer, saveEmployerToken };
