@@ -138,7 +138,7 @@ const getJobApplicationsListService = async (jpno, page, size) => {
                 left join tbl_partTimer p on jpa.pno = p.pno
                 left join tbl_partTimerImage pi on jpa.pno = pi.pno
             where
-                jpa.jpadelete = false and jp.jpno = :jpno
+                jpa.jpadelete = false and jp.jpno = :jpno and jpa.jpastatus = 0
             order by
                 jpano
             limit
@@ -381,7 +381,7 @@ const getPartTimerListWithPayCountService = async (eno, year, month) => {
     return data['count(*)'];
 }
 
-const getAcceeptJobApplicationService = async (jpano, status) => {
+const getAcceeptJobApplicationService = async (jpano, status) => { // 파트타이머 신청 수락
 
     console.log(jpano, status);
 
