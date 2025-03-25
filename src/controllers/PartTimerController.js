@@ -1,4 +1,5 @@
 import {
+    getAcceeptJobApplicationService,
     getApplicantReadService,
     getJobApplicationsCountService,
     getJobApplicationsListService,
@@ -167,8 +168,21 @@ const getPartTimerListWithPay = async (req, res) => {
         data: returnDTO
     })
 }
+
+const updateApplication = async (req, res) => {
+
+    const jpano = req.query.jpano;
+    const status = req.query.status;
+
+    const result = await getAcceeptJobApplicationService(jpano,status);
+    res.status(200).json({
+        status: 'success',
+        data: result
+    })
+}
+
 export {
     getMyPartTimerList, getPartTimerOne, getPartTimerWorkStatus, getApplicantList,
     getApplicantOne, getPartTimerWorkHistory, getPartTimerTotalPay, getPartTimerPayByYearMonth,
-    getPartTImerPayByYear, getPartTimerListWithPay
+    getPartTImerPayByYear, getPartTimerListWithPay, updateApplication
 }

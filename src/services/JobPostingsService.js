@@ -297,6 +297,8 @@ const listAllJobPostingsService = async (page = 1, size = 10) => {
 };
 
 
+
+
 export {
     registerJobPostingService,
     editJobPostingService,
