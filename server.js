@@ -52,11 +52,11 @@ app.use('/uploads/jobpostings', express.static('uploads/jobpostings'));
 // 라우터 연결
 app.use('/employer/api/v1/login', EmployerLoginRoutes);
 app.use('/employer/api/v1/emp', EmployerRoutes);
-app.use('/employer/api/map', mapRoutes);
+app.use('/employer/api/v1/map', mapRoutes);
 app.use('/employer/api/v1/partTimer', PartTimerRoutes);
 app.use('/employer/api/v1/jobposting', JobPostingsRoutes);
 app.use('/employer/api/v1/calendar', CalendarRoutes);
-app.use('/employer/api/jobpostings-images', jobPostingImageRoutes);
+app.use('/employer/api/v1/jobpostings-images', jobPostingImageRoutes);
 
 // 서버 시작
 server.listen(PORT, () => {
